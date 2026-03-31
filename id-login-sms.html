@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统一身份认证平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #151522 50%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                    from 0deg,
+                    transparent,
+                    rgba(0, 200, 255, 0.2),
+                    transparent 30%
+            );
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 2rem; /* 微调标题尺寸，稍微大一点 */
+            font-weight: 800;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .logo p {
+            color: #a0a0c0;
+            font-size: 1rem;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #b0b0e0;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00d2ff;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .country-select {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0a0c0;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        .phone-input {
+            padding-left: 136px !important; /* 给国家选择器留空间 */
+        }
+
+        .code-input-wrapper {
+            display: flex;
+            gap: 15px;
+        }
+
+        .code-input {
+            flex: 1;
+        }
+
+        .send-code-btn {
+            padding: 18px 25px;
+            background: linear-gradient(90deg, #ff9500, #ff6b35);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 140px;
+        }
+
+        .send-code-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 149, 0, 0.3);
+        }
+
+        .send-code-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .send-code-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 35px 0;
+            color: #a0a0c0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .divider span {
+            padding: 0 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-methods {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .auth-method {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 18%;
+        }
+
+        .auth-method:hover {
+            transform: translateY(-5px);
+        }
+
+        .method-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .auth-method:hover .method-icon {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(0, 210, 255, 0.5);
+            box-shadow: 0 8px 16px rgba(0, 210, 255, 0.2);
+        }
+
+        .method-label {
+            font-size: 0.85rem;
+            color: #b0b0e0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .phone .method-icon { color: #3a7bd5; }
+        .email .method-icon { color: #ff9500; }
+        .wechat .method-icon { color: #07c160; }
+        .alipay .method-icon { color: #1677ff; }
+        .blockchain .method-icon { color: #8a2be2; }
+
+        .active-method {
+            position: relative;
+        }
+
+        .active-method::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00d2ff;
+            box-shadow: 0 0 10px #00d2ff;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a {
+            color: #a0a0c0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #00d2ff;
+            text-decoration: underline;
+        }
+
+        .hint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #a0a0c0;
+        }
+
+        .hint a {
+            color: #00d2ff;
+            text-decoration: none;
+        }
+
+        .hint a:hover {
+            text-decoration: underline;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #b0b0e0;
+        }
+
+        .remember-me input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #00d2ff;
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 40px 25px;
+                border-radius: 20px;
+            }
+            .auth-methods {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            .auth-method {
+                width: 45%;
+            }
+            .code-input-wrapper {
+                flex-direction: column;
+            }
+            .send-code-btn {
+                min-width: 100%;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="logo">
+        <h1>手机短信登录</h1>
+        <p>-- 统一身份认证平台 --</p >
+    </div>
+
+    <form id="smsLoginForm">
+        <div class="form-group">
+            <label class="form-label">手机号码</label>
+            <div class="input-wrapper">
+                <div class="country-select">
+                    <i class="fas fa-flag"></i>
+                    <select id="countryCode" style="background: transparent; border: none; color: #a0a0c0; margin-left: 8px; font-size: 1rem;">
+                        <option value="+86">+86 中国</option>
+                        <option value="+1">+1 美国</option>
+                        <option value="+44">+44 英国</option>
+                        <option value="+81">+81 日本</option>
+                        <option value="+82">+82 韩国</option>
+                    </select>
+                </div>
+                <input type="tel" class="form-input phone-input" id="phoneNumber" placeholder="输入手机号码" required
+                       oninvalid="this.setCustomValidity('输入手机号码')"
+                       oninput="this.setCustomValidity('')">
+                <i class="input-icon fas fa-mobile-alt"></i>
+            </div>
+            <div class="hint">系统将发送验证码到此手机，注意查收</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">短信验证码</label>
+            <div class="code-input-wrapper">
+                <div class="input-wrapper code-input">
+                    <i class="input-icon fas fa-sms"></i>
+                    <input type="text" class="form-input" id="smsCode" placeholder="输入6位验证码" required
+                           oninvalid="this.setCustomValidity('输入6位验证码')"
+                           oninput="this.setCustomValidity('')" maxlength="6">
+                </div>
+                <button type="button" class="send-code-btn" id="sendCodeBtn">
+                    <i class="fas fa-paper-plane"></i> 发送验证码
+                </button>
+            </div>
+            <div class="hint" id="countdownHint">验证码有效期10分钟</div>
+        </div>
+
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">记住我 (30天内自动登录)</label>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> 登录 / 注册
+        </button>
+    </form>
+
+    <div class="divider">
+        <span>其它登录方式</span>
+    </div>
+
+    <div class="auth-methods">
+        <div class="auth-method phone active-method" data-method="userid">
+            <div class="method-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="method-label">用户ID</span>
+        </div>
+        <div class="auth-method email" data-method="email">
+            <div class="method-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <span class="method-label">Email</span>
+        </div>
+        <div class="auth-method wechat" data-method="wechat">
+            <div class="method-icon">
+                <i class="fab fa-weixin"></i>
+            </div>
+            <span class="method-label">微信</span>
+        </div>
+        <div class="auth-method alipay" data-method="alipay">
+            <div class="method-icon">
+                <i class="fab fa-alipay"></i>
+            </div>
+            <span class="method-label">支付宝</span>
+        </div>
+        <div class="auth-method blockchain" data-method="blockchain">
+            <div class="method-icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <span class="method-label">DID</span>
+        </div>
+    </div>
+
+    <div class="footer-links">
+        <a href=" "><i class="fas fa-question-circle"></i> 帮助中心</a >
+        <a href="#"><i class="fas fa-user-plus"></i> 注册新账号</a >
+        <a href="#"><i class="fas fa-shield-alt"></i> 隐私政策</a >
+    </div>
+</div>
+
+<script>
+    // 发送验证码倒计时
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const countdownHint = document.getElementById('countdownHint');
+    let countdown = 0;
+    let countdownInterval = null;
+
+    function startCountdown(seconds) {
+        countdown = seconds;
+        sendCodeBtn.disabled = true;
+
+        countdownInterval = setInterval(() => {
+            countdown--;
+            countdownHint.textContent = `验证码已发送，${countdown}秒后可重新获取`;
+
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                sendCodeBtn.disabled = false;
+                sendCodeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 重新发送';
+                countdownHint.textContent = '验证码有效期10分钟';
+            }
+        }, 1000);
+    }
+
+    sendCodeBtn.addEventListener('click', () => {
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+        if (!phoneNumber || !/^[0-9]{10,15}$/.test(phoneNumber)) {
+            // alert('无效的手机号码');
+            Swal.fire({
+                title: '提示', // 这里可以自定义标题
+                text: '无效的手机号码',
+                icon: 'warning',
+                confirmButtonText: '确定',
+                background: '#1a1a2e', // 可以匹配你页面的深色背景
+                color: '#fff'
+            });
+            return;
+        }
+
+        // 模拟发送验证码API调用
+        sendCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+        sendCodeBtn.disabled = true;
+
+        setTimeout(() => {
+            sendCodeBtn.innerHTML = '<i class="fas fa-check"></i> 已发送';
+            startCountdown(60); // 60秒倒计时
+        }, 1000);
+    });
+
+    // 切换登录方式
+    const authMethods = document.querySelectorAll('.auth-method');
+    authMethods.forEach(method => {
+        method.addEventListener('click', () => {
+            // 移除所有active
+            authMethods.forEach(m => m.classList.remove('active-method'));
+            // 添加active
+            method.classList.add('active-method');
+
+            const methodType = method.getAttribute('data-method');
+            let methodTypeText = ''
+            if(methodType === 'userid') {
+                methodTypeText = '用户ID'
+            }else if(methodType === 'email') {
+                methodTypeText = 'Email'
+            }else if(methodType === 'wechat') {
+                methodTypeText = '微信'
+            }else if(methodType === 'alipay') {
+                methodTypeText = '支付宝'
+            }else if(methodType === 'blockchain') {
+                methodTypeText = 'DID'
+            }
+            console.log(`切换到 ${methodTypeText} 登录`);
+
+            // 在实际应用中，这里会跳转到对应的登录页面或切换表单
+            if (methodType !== 'phone') {
+                // alert(`切换到 ${methodType} 登录`);
+                Swal.fire({
+                    title: '提示', // 这里可以自定义标题
+                    text: `切换到 ${methodTypeText} 登录`,
+                    icon: 'warning',
+                    confirmButtonText: '确定',
+                    background: '#1a1a2e', // 可以匹配你页面的深色背景
+                    color: '#fff'
+                });
+                // window.location.href = `/${methodType}-login.html`;
+            }
+        });
+    });
+
+    // 表单提交
+    document.getElementById('smsLoginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        const smsCode = document.getElementById('smsCode').value.trim();
+        const loginBtn = document.getElementById('loginBtn');
+        const originalText = loginBtn.innerHTML;
+
+        if (!phoneNumber || !/^[0-9]{10,15}$/.test(phoneNumber)) {
+            // alert('无效的手机号码');
+            Swal.fire({
+                title: '提示', // 这里可以自定义标题
+                text: '无效的手机号码',
+                icon: 'warning',
+                confirmButtonText: '确定',
+                background: '#1a1a2e', // 可以匹配你页面的深色背景
+                color: '#fff'
+            });
+            return;
+        }
+
+        if (!smsCode || !/^[0-9]{6}$/.test(smsCode)) {
+            // alert('输入6位数字验证码');
+            Swal.fire({
+                title: '提示', // 这里可以自定义标题
+                text: '输入6位数字验证码',
+                icon: 'warning',
+                confirmButtonText: '确定',
+                background: '#1a1a2e', // 可以匹配你页面的深色背景
+                color: '#fff'
+            });
+            return;
+        }
+
+        // 模拟API调用
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 验证中...';
+        loginBtn.disabled = true;
+
+        setTimeout(() => {
+            loginBtn.innerHTML = '<i class="fas fa-check"></i> 登录成功';
+            loginBtn.style.background = 'linear-gradient(90deg, #34c759, #2ecc71)';
+
+            setTimeout(() => {
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                loginBtn.style.background = 'linear-gradient(90deg, #00d2ff, #3a7bd5)';
+
+                // 在实际应用中，这里会跳转到用户仪表板
+                // alert('登录成功！欢迎回来。');
+                Swal.fire({
+                    title: '提示', // 这里可以自定义标题
+                    text: '登录成功！欢迎回来。',
+                    icon: 'success',
+                    confirmButtonText: '确定',
+                    background: '#1a1a2e', // 可以匹配你页面的深色背景
+                    color: '#fff'
+                });
+                // window.location.href = '/dashboard.html';
+            }, 2000);
+        }, 1500);
+    });
+
+    // 输入验证
+    const phoneInput = document.getElementById('phoneNumber');
+    phoneInput.addEventListener('input', (e) => {
+        // 只允许数字
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+
+    const smsCodeInput = document.getElementById('smsCode');
+    smsCodeInput.addEventListener('input', (e) => {
+        // 只允许数字
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+</script>
+</body>
+</html>

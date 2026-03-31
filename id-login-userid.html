@@ -262,6 +262,21 @@
             text-decoration: underline;
         }
 
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #b0b0e0;
+        }
+
+        .remember-me input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #00d2ff;
+        }
+
         .active-method {
             position: relative;
         }
@@ -298,7 +313,7 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <h1>用户ID认证</h1>
+            <h1>用户ID登录</h1>
             <p>-- 统一身份认证平台 --</p>
         </div>
 
@@ -307,7 +322,9 @@
                 <label class="form-label">用户ID</label>
                 <div class="input-wrapper">
                     <i class="input-icon fas fa-user"></i>
-                    <input type="text" class="form-input" placeholder="输入你的用户ID" required>
+                    <input type="text" class="form-input" placeholder="输入你的用户ID" required
+                           oninvalid="this.setCustomValidity('输入你的用户ID')"
+                           oninput="this.setCustomValidity('')">
                 </div>
             </div>
 
@@ -315,9 +332,16 @@
                 <label class="form-label">密码</label>
                 <div class="input-wrapper">
                     <i class="input-icon fas fa-lock"></i>
-                    <input type="password" class="form-input" id="password" placeholder="输入你的密码" required>
+                    <input type="password" class="form-input" id="password" placeholder="输入你的密码" required
+                           oninvalid="this.setCustomValidity('输入你的密码')"
+                           oninput="this.setCustomValidity('')">
                     <i class="password-toggle fas fa-eye" id="togglePassword"></i>
                 </div>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">记住我 (30天内自动登录)</label>
             </div>
 
             <button type="submit" class="login-btn">
@@ -404,12 +428,12 @@
             const submitBtn = document.querySelector('.login-btn');
             const originalText = submitBtn.innerHTML;
             
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 认证中...';
             submitBtn.disabled = true;
             
             // Simulate API call
             setTimeout(() => {
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Access Granted';
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> 登录成功';
                 submitBtn.style.background = 'linear-gradient(90deg, #34c759, #2ecc71)';
                 
                 setTimeout(() => {
