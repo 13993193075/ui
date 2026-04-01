@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>统一身份认证平台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         * {
             margin: 0;
@@ -262,6 +263,21 @@
             text-decoration: underline;
         }
 
+        .hint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #a0a0c0;
+        }
+
+        .hint a {
+            color: #00d2ff;
+            text-decoration: none;
+        }
+
+        .hint a:hover {
+            text-decoration: underline;
+        }
+
         .remember-me {
             display: flex;
             align-items: center;
@@ -317,14 +333,12 @@
             <p>-- 统一身份认证平台 --</p>
         </div>
 
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
             <div class="form-group">
                 <label class="form-label">用户ID</label>
                 <div class="input-wrapper">
                     <i class="input-icon fas fa-user"></i>
-                    <input type="text" class="form-input" placeholder="输入你的用户ID" required
-                           oninvalid="this.setCustomValidity('输入你的用户ID')"
-                           oninput="this.setCustomValidity('')">
+                    <input type="text" class="form-input" id="userid" placeholder="输入你的用户ID" required>
                 </div>
             </div>
 
@@ -332,11 +346,10 @@
                 <label class="form-label">密码</label>
                 <div class="input-wrapper">
                     <i class="input-icon fas fa-lock"></i>
-                    <input type="password" class="form-input" id="password" placeholder="输入你的密码" required
-                           oninvalid="this.setCustomValidity('输入你的密码')"
-                           oninput="this.setCustomValidity('')">
+                    <input type="password" class="form-input" id="password" placeholder="输入你的密码" required>
                     <i class="password-toggle fas fa-eye" id="togglePassword"></i>
                 </div>
+                <div class="hint"><a href="#"><i class="fas fa-key"></i> 忘记密码?</a ></div>
             </div>
 
             <div class="remember-me">
@@ -358,7 +371,7 @@
                 <div class="method-icon">
                     <i class="fas fa-mobile-alt"></i>
                 </div>
-                <span class="method-label">手机短信</span>
+                <span class="method-label">手机</span>
             </div>
             <div class="auth-method email" data-method="email">
                 <div class="method-icon">
@@ -389,15 +402,14 @@
         <div class="footer-links">
             <a href="#"><i class="fas fa-question-circle"></i> 帮助中心</a>
             <a href="#"><i class="fas fa-user-plus"></i> 注册新账号</a>
-            <a href="#"><i class="fas fa-key"></i> 忘记密码?</a>
+            <a href="#"><i class="fas fa-shield-alt"></i> 隐私政策</a >
         </div>
     </div>
 
     <script>
-        // Toggle password visibility
+        // 切换密码可见性
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
-
         togglePassword.addEventListener('click', () => {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
@@ -405,29 +417,79 @@
             togglePassword.classList.toggle('fa-eye-slash');
         });
 
-        // Switch auth methods
+        // 切换登录方式
         const authMethods = document.querySelectorAll('.auth-method');
         authMethods.forEach(method => {
             method.addEventListener('click', () => {
-                // Remove active class from all
+                // 移除所有active
                 authMethods.forEach(m => m.classList.remove('active-method'));
-                // Add to clicked
+                // 添加active
                 method.classList.add('active-method');
-                
-                // Update form based on selected method (simplified demo)
+
                 const methodType = method.getAttribute('data-method');
-                console.log(`Switched to ${methodType} login`);
-                
-                // In a real app, you would change the form fields here
+                let methodTypeText = ''
+                if(methodType === 'phone') {
+                    methodTypeText = '手机'
+                }else if(methodType === 'email') {
+                    methodTypeText = 'Email'
+                }else if(methodType === 'wechat') {
+                    methodTypeText = '微信'
+                }else if(methodType === 'alipay') {
+                    methodTypeText = '支付宝'
+                }else if(methodType === 'blockchain') {
+                    methodTypeText = 'DID'
+                }
+                console.log(`切换到 ${methodTypeText} 登录`);
+
+                // 跳转到对应的登录页面
+                if (methodType !== 'userid') {
+                    // alert(`切换到 ${methodType} 登录`);
+                    Swal.fire({
+                        title: '提示', // 这里可以自定义标题
+                        text: `切换到 ${methodTypeText} 登录`,
+                        icon: 'warning',
+                        confirmButtonText: '知道了',
+                        background: '#1a1a2e', // 可以匹配你页面的深色背景
+                        color: '#fff'
+                    });
+                    // window.location.href = `/${methodType}-login.html`;
+                }
             });
         });
 
-        // Form submission
+        // 表单提交：登录
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            const userid = document.getElementById('userid').value.trim();
+            const password = document.getElementById('password').value.trim();
             const submitBtn = document.querySelector('.login-btn');
             const originalText = submitBtn.innerHTML;
-            
+
+            if (!userid) {
+                // alert('请输入用户ID');
+                Swal.fire({
+                    title: '提示', // 这里可以自定义标题
+                    text: '请输入用户ID',
+                    icon: 'warning',
+                    confirmButtonText: '知道了',
+                    background: '#1a1a2e', // 可以匹配你页面的深色背景
+                    color: '#fff'
+                });
+                return;
+            }
+
+            if (!password || password.length < 6) {
+                Swal.fire({
+                    title: '提示',
+                    text: '密码至少需要6个字符',
+                    icon: 'warning',
+                    confirmButtonText: '知道了',
+                    background: '#1a1a2e',
+                    color: '#fff'
+                });
+                return;
+            }
+
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 认证中...';
             submitBtn.disabled = true;
             

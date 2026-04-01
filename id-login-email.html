@@ -382,40 +382,37 @@
         <p>-- 统一身份认证平台 --</p >
     </div>
 
-    <form id="emailLoginForm">
+    <form id="emailLoginForm" novalidate>
         <div class="form-group">
             <label class="form-label">Email地址</label>
             <div class="input-wrapper">
                 <i class="input-icon fas fa-envelope"></i>
-                <input type="email" class="form-input" id="email" placeholder="输入你的Email地址" required
-                       oninvalid="this.setCustomValidity('输入你的Email地址')"
-                       oninput="this.setCustomValidity('')">
+                <input type="email" class="form-input" id="email" placeholder="输入你的Email地址" required>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">密码</label>
+            <label class="form-label">密码 (密码、验证码二选一)</label>
             <div class="input-wrapper">
                 <i class="input-icon fas fa-lock"></i>
-                <input type="password" class="form-input" id="password" placeholder="输入你的密码" required
-                       oninvalid="this.setCustomValidity('输入你的密码')"
-                       oninput="this.setCustomValidity('')">
+                <input type="password" class="form-input" id="password" placeholder="输入你的密码" required>
                 <i class="password-toggle fas fa-eye" id="togglePassword"></i>
             </div>
+            <div class="hint"><a href="#"><i class="fas fa-key"></i> 忘记密码?</a ></div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">验证码 (可选)</label>
+            <label class="form-label">验证码 (密码、验证码二选一)</label>
             <div class="code-input-wrapper">
                 <div class="input-wrapper code-input">
                     <i class="input-icon fas fa-shield-alt"></i>
-                    <input type="text" class="form-input" id="captcha" placeholder="输入验证码" maxlength="6">
+                    <input type="text" class="form-input" id="captcha" placeholder="输入6位验证码" maxlength="6">
                 </div>
                 <button type="button" class="send-code-btn" id="sendCaptchaBtn">
-                    <i class="fas fa-redo"></i> 获取验证码
+                    <i class="fas fa-paper-plane"></i> 发送
                 </button>
             </div>
-            <div class="hint">点击 [获取验证码]，系统将发送验证码到你的Email</div>
+            <div class="hint" id="countdownHint">点击 [发送]，系统将发送验证码到你的Email，有效期10分钟</div>
         </div>
 
         <div class="remember-me">
@@ -433,7 +430,7 @@
     </div>
 
     <div class="auth-methods">
-        <div class="auth-method userid" data-method="userid">
+        <div class="auth-method userid active-method" data-method="userid">
             <div class="method-icon">
                 <i class="fas fa-user"></i>
             </div>
@@ -443,13 +440,7 @@
             <div class="method-icon">
                 <i class="fas fa-mobile-alt"></i>
             </div>
-            <span class="method-label">手机短信</span>
-        </div>
-        <div class="auth-method email active-method" data-method="email">
-            <div class="method-icon">
-                <i class="fas fa-envelope"></i>
-            </div>
-            <span class="method-label">Email</span>
+            <span class="method-label">手机</span>
         </div>
         <div class="auth-method wechat" data-method="wechat">
             <div class="method-icon">
@@ -474,7 +465,7 @@
     <div class="footer-links">
         <a href=" "><i class="fas fa-question-circle"></i> 帮助中心</a >
         <a href="#"><i class="fas fa-user-plus"></i> 注册新账号</a >
-        <a href="#"><i class="fas fa-key"></i> 忘记密码?</a >
+        <a href="#"><i class="fas fa-shield-alt"></i> 隐私政策</a >
     </div>
 </div>
 
@@ -482,7 +473,6 @@
     // 切换密码可见性
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
-
     togglePassword.addEventListener('click', () => {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
@@ -490,28 +480,51 @@
         togglePassword.classList.toggle('fa-eye-slash');
     });
 
-    // 刷新验证码
+    // 发送验证码倒计时
     const sendCaptchaBtn = document.getElementById('sendCaptchaBtn');
-    const captchaInput = document.getElementById('captcha');
+    const countdownHint = document.getElementById('countdownHint');
+    let countdown = 0;
+    let countdownInterval = null;
+    function startCountdown(seconds) {
+        countdown = seconds;
+        sendCaptchaBtn.disabled = true;
+        countdownInterval = setInterval(() => {
+            countdown--;
+            countdownHint.textContent = `验证码已发送，${countdown}秒后可重新发送`;
 
-    function generateCaptcha() {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let captcha = '';
-        for (let i = 0; i < 6; i++) {
-            captcha += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return captcha;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                sendCaptchaBtn.disabled = false;
+                sendCaptchaBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发送';
+                countdownHint.textContent = '点击 [发送]，系统将发送验证码到你的Email，有效期10分钟';
+            }
+        }, 1000);
     }
-
-    let currentCaptcha = generateCaptcha();
-
+    // 发送验证码
     sendCaptchaBtn.addEventListener('click', () => {
-        currentCaptcha = generateCaptcha();
-        sendCaptchaBtn.innerHTML = '<i class="fas fa-check"></i> 已刷新';
+        const email = document.getElementById('email').value.trim();
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            // alert('请输入有效的Email地址');
+            Swal.fire({
+                title: '提示', // 这里可以自定义标题
+                text: '请输入有效的Email地址',
+                icon: 'warning',
+                confirmButtonText: '知道了',
+                background: '#1a1a2e', // 可以匹配你页面的深色背景
+                color: '#fff'
+            });
+            return;
+        }
+
+        // 模拟发送验证码API调用
+        sendCaptchaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+        sendCaptchaBtn.disabled = true;
 
         setTimeout(() => {
-            sendCaptchaBtn.innerHTML = '<i class="fas fa-redo"></i> 刷新验证码';
-        }, 1500);
+            sendCaptchaBtn.innerHTML = '<i class="fas fa-check"></i> 已发送';
+            startCountdown(60); // 60秒倒计时
+        }, 1000);
     });
 
     // 切换登录方式
@@ -528,7 +541,7 @@
             if(methodType === 'userid') {
                 methodTypeText = '用户ID';
             } else if(methodType === 'phone') {
-                methodTypeText = '手机短信';
+                methodTypeText = '手机';
             } else if(methodType === 'wechat') {
                 methodTypeText = '微信';
             } else if(methodType === 'alipay') {
@@ -543,7 +556,7 @@
                     title: '提示',
                     text: `切换到 ${methodTypeText} 登录`,
                     icon: 'warning',
-                    confirmButtonText: '确定',
+                    confirmButtonText: '知道了',
                     background: '#1a1a2e',
                     color: '#fff'
                 });
@@ -551,7 +564,7 @@
         });
     });
 
-    // 表单提交
+    // 表单提交：登录
     document.getElementById('emailLoginForm').addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -561,38 +574,49 @@
         const loginBtn = document.getElementById('loginBtn');
         const originalText = loginBtn.innerHTML;
 
-        // 基础验证
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             Swal.fire({
                 title: '提示',
                 text: '请输入有效的Email地址',
                 icon: 'warning',
-                confirmButtonText: '确定',
+                confirmButtonText: '知道了',
                 background: '#1a1a2e',
                 color: '#fff'
             });
             return;
         }
 
-        if (!password || password.length < 6) {
+        if(!password && !captcha) {
+            // alert('请输入密码或验证码');
+            Swal.fire({
+                title: '提示', // 这里可以自定义标题
+                text: '请输入密码或验证码',
+                icon: 'warning',
+                confirmButtonText: '知道了',
+                background: '#1a1a2e', // 可以匹配你页面的深色背景
+                color: '#fff'
+            });
+            return;
+        }
+
+        if (password && password.length < 6) {
             Swal.fire({
                 title: '提示',
                 text: '密码至少需要6个字符',
                 icon: 'warning',
-                confirmButtonText: '确定',
+                confirmButtonText: '知道了',
                 background: '#1a1a2e',
                 color: '#fff'
             });
             return;
         }
 
-        // 验证码验证（如果填写了）
-        if (captcha && captcha !== currentCaptcha) {
+        if (captcha && !/^[0-9]{6}$/.test(captcha)) {
             Swal.fire({
                 title: '提示',
-                text: '验证码错误',
+                text: '请输入6位数字验证码',
                 icon: 'error',
-                confirmButtonText: '确定',
+                confirmButtonText: '知道了',
                 background: '#1a1a2e',
                 color: '#fff'
             });
@@ -614,16 +638,14 @@
                 loginBtn.style.background = 'linear-gradient(90deg, #ff9500, #ff6b35)';
 
                 Swal.fire({
-                    title: '登录成功',
-                    text: '欢迎回来！',
+                    title: '提示', // 这里可以自定义标题
+                    text: '登录成功！欢迎回来。',
                     icon: 'success',
-                    confirmButtonText: '进入用户中心',
+                    confirmButtonText: '进入应用',
                     background: '#1a1a2e',
                     color: '#fff'
                 });
             }, 2000);
         }, 1500);
     });
-
-    // 初始生成验证码
-    updateCaptcha();
+</script>
