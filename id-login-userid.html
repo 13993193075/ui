@@ -499,6 +499,16 @@
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                     submitBtn.style.background = 'linear-gradient(90deg, #00d2ff, #3a7bd5)';
+
+                    // alert('登录成功！欢迎回来。');
+                    Swal.fire({
+                        title: '提示', // 这里可以自定义标题
+                        text: '登录成功！欢迎回来。',
+                        icon: 'success',
+                        confirmButtonText: '进入应用',
+                        background: '#1a1a2e',
+                        color: '#fff'
+                    });
                 }, 2000);
             }, 1500);
         });

@@ -637,13 +637,13 @@
                 loginBtn.innerHTML = '<i class="fas fa-check"></i> 登录成功';
                 loginBtn.style.background = 'linear-gradient(90deg, #34c759, #2ecc71)';
 
-                // 跳转模拟
+                // alert('登录成功！欢迎回来。');
                 setTimeout(() => {
                     Swal.fire({
-                        title: 'DID登录成功',
-                        text: '去中心化身份验证完成！',
+                        title: '提示',
+                        text: '登录成功！欢迎回来。',
                         icon: 'success',
-                        confirmButtonText: '进入用户中心',
+                        confirmButtonText: '进入应用',
                         background: '#1a1a2e',
                         color: '#fff'
                     });
@@ -651,7 +651,7 @@
             }, 1000);
         }, 2000);
     });
-    
+
     // 切换登录方式
     const authMethods = document.querySelectorAll('.auth-method');
     authMethods.forEach(method => {

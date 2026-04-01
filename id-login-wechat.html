@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统一身份认证平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #151522 50%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                    from 0deg,
+                    transparent,
+                    rgba(7, 193, 96, 0.2),
+                    transparent 30%
+            );
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #07c160, #1db954, #07c160);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .logo p {
+            color: #a0a0c0;
+            font-size: 1rem;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .qr-code::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: #07c160;
+            border-radius: 8px;
+        }
+
+        .qr-code::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .qr-refresh {
+            color: #07c160;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .qr-refresh:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 35px 0;
+            color: #a0a0c0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .divider span {
+            padding: 0 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-methods {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .auth-method {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 18%;
+        }
+
+        .auth-method:hover {
+            transform: translateY(-5px);
+        }
+
+        .method-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .auth-method:hover .method-icon {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(7, 193, 96, 0.5);
+            box-shadow: 0 8px 16px rgba(7, 193, 96, 0.2);
+        }
+
+        .method-label {
+            font-size: 0.85rem;
+            color: #b0b0e0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .userid .method-icon { color: #00d2ff; }
+        .phone .method-icon { color: #3a7bd5; }
+        .email .method-icon { color: #ff9500; }
+        .alipay .method-icon { color: #1677ff; }
+        .blockchain .method-icon { color: #8a2be2; }
+
+        .active-method {
+            position: relative;
+        }
+
+        .active-method::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #07c160;
+            box-shadow: 0 0 10px #07c160;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a {
+            color: #a0a0c0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #07c160;
+            text-decoration: underline;
+        }
+
+        .hint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #a0a0c0;
+            text-align: center;
+        }
+
+        .scan-status {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .status-icon {
+            font-size: 2rem;
+            color: #07c160;
+            margin-bottom: 10px;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            color: #b0b0e0;
+        }
+
+        .status-detail {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            margin-top: 5px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(90deg, #07c160, #1db954);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(7, 193, 96, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(7, 193, 96, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 40px 25px;
+                border-radius: 20px;
+            }
+            .auth-methods {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            .auth-method {
+                width: 45%;
+            }
+            .qr-code {
+                width: 180px;
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="logo">
+        <h1>微信登录</h1>
+        <p>-- 统一身份认证平台 --</p >
+    </div>
+
+    <div class="qr-container">
+        <div class="qr-code" id="qrCode"></div>
+        <div class="hint">二维码每60秒自动刷新</div>
+        <div class="qr-refresh" id="refreshQR">
+            <i class="fas fa-sync-alt"></i> 手动刷新二维码
+        </div>
+    </div>
+
+    <div class="scan-status" id="scanStatus">
+        <div class="status-icon">
+            <i class="fas fa-qrcode"></i>
+        </div>
+        <div class="status-text">等待扫描</div>
+        <div class="status-detail">请使用微信扫描上方二维码</div>
+    </div>
+
+    <button class="login-btn" id="loginBtn" disabled>
+        <i class="fab fa-weixin"></i> 等待微信确认
+    </button>
+
+    <div class="divider">
+        <span>其它登录方式</span>
+    </div>
+
+    <div class="auth-methods">
+        <div class="auth-method userid active-method" data-method="userid">
+            <div class="method-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="method-label">用户ID</span>
+        </div>
+        <div class="auth-method phone" data-method="phone">
+            <div class="method-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <span class="method-label">手机</span>
+        </div>
+        <div class="auth-method email" data-method="email">
+            <div class="method-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <span class="method-label">Email</span>
+        </div>
+        <div class="auth-method alipay" data-method="alipay">
+            <div class="method-icon">
+                <i class="fab fa-alipay"></i>
+            </div>
+            <span class="method-label">支付宝</span>
+        </div>
+        <div class="auth-method blockchain" data-method="blockchain">
+            <div class="method-icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <span class="method-label">DID</span>
+        </div>
+    </div>
+
+    <div class="footer-links">
+        <a href=" "><i class="fas fa-question-circle"></i> 帮助中心</a >
+        <a href="#"><i class="fas fa-user-plus"></i> 注册新账号</a >
+        <a href="#"><i class="fas fa-shield-alt"></i> 隐私政策</a >
+    </div>
+</div>
+
+<script>
+    // 模拟二维码状态
+    const qrCode = document.getElementById('qrCode');
+    const refreshQR = document.getElementById('refreshQR');
+    const scanStatus = document.getElementById('scanStatus');
+    const statusIcon = scanStatus.querySelector('.status-icon i');
+    const statusText = scanStatus.querySelector('.status-text');
+    const statusDetail = scanStatus.querySelector('.status-detail');
+    const loginBtn = document.getElementById('loginBtn');
+
+    let qrExpired = false;
+    let scanDetected = false;
+    let confirmClicked = false;
+
+    // 生成随机二维码ID
+    function generateQRId() {
+        return 'wx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    let currentQRId = generateQRId();
+
+    // 更新二维码显示
+    function updateQRCode() {
+        currentQRId = generateQRId();
+        qrCode.style.animation = 'none';
+        void qrCode.offsetWidth; // 触发重绘
+        qrCode.style.animation = 'shimmer 1s ease-in-out';
+        qrExpired = false;
+        scanDetected = false;
+        confirmClicked = false;
+
+        // 重置状态
+        statusIcon.className = 'fas fa-qrcode';
+        statusIcon.style.color = '#07c160';
+        statusText.textContent = '等待扫描';
+        statusDetail.textContent = '请使用微信扫描上方二维码';
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fab fa-weixin"></i> 等待微信确认';
+
+        console.log(`二维码已刷新: ${currentQRId}`);
+    }
+
+    // 模拟扫描检测
+    function simulateScan() {
+        if (qrExpired || scanDetected) return;
+
+        setTimeout(() => {
+            if (!qrExpired && !scanDetected) {
+                // 30%概率模拟用户扫描
+                if (Math.random() < 0.3) {
+                    scanDetected = true;
+                    statusIcon.className = 'fas fa-check-circle';
+                    statusIcon.style.color = '#07c160';
+                    statusText.textContent = '扫描成功';
+                    statusDetail.textContent = '请在手机上确认登录';
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fab fa-weixin"></i> 点击确认登录';
+
+                    // 模拟手机确认
+                    setTimeout(() => {
+                        if (!confirmClicked && scanDetected) {
+                            // 50%概率模拟自动确认
+                            if (Math.random() < 0.5) {
+                                simulateConfirm();
+                            }
+                        }
+                    }, 3000);
+                }
+            }
+        }, 2000);
+    }
+
+    // 模拟确认登录
+    function simulateConfirm() {
+        if (!scanDetected || confirmClicked) return;
+
+        confirmClicked = true;
+        statusIcon.className = 'fas fa-user-check';
+        statusIcon.style.color = '#34c759';
+        statusText.textContent = '登录成功';
+        statusDetail.textContent = '正在进入应用...';
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-check"></i> 登录成功';
+        loginBtn.style.background = 'linear-gradient(90deg, #34c759, #2ecc71)';
+
+        // alert('登录成功！欢迎回来。');
+        setTimeout(() => {
+            Swal.fire({
+                title: '提示',
+                text: '登录成功！欢迎回来。',
+                icon: 'success',
+                confirmButtonText: '进入应用',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+        }, 1500);
+    }
+
+    // 二维码自动刷新
+    let qrRefreshInterval = setInterval(() => {
+        qrExpired = true;
+        statusIcon.className = 'fas fa-exclamation-triangle';
+        statusIcon.style.color = '#ff9500';
+        statusText.textContent = '二维码已过期';
+        statusDetail.textContent = '刷新二维码后重新扫描';
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fab fa-weixin"></i> 二维码已过期';
+
+        setTimeout(updateQRCode, 1000);
+    }, 60000); // 60秒刷新
+
+    // 手动刷新
+    refreshQR.addEventListener('click', () => {
+        updateQRCode();
+        simulateScan();
+    });
+
+    // 登录按钮点击
+    loginBtn.addEventListener('click', () => {
+        if (scanDetected && !confirmClicked) {
+            simulateConfirm();
+        }
+    });
+
+    // 切换登录方式
+    const authMethods = document.querySelectorAll('.auth-method');
+    authMethods.forEach(method => {
+        method.addEventListener('click', () => {
+            // 移除所有active
+            authMethods.forEach(m => m.classList.remove('active-method'));
+            // 添加active
+            method.classList.add('active-method');
+
+            const methodType = method.getAttribute('data-method');
+            let methodTypeText = '';
+            if(methodType === 'userid') {
+                methodTypeText = '用户ID';
+            } else if(methodType === 'phone') {
+                methodTypeText = '手机';
+            } else if(methodType === 'email') {
+                methodTypeText = 'Email';
+            } else if(methodType === 'alipay') {
+                methodTypeText = '支付宝';
+            } else if(methodType === 'blockchain') {
+                methodTypeText = 'DID';
+            }
+            console.log(`切换到 ${methodTypeText} 登录`);
+
+            if (methodType !== 'wechat') {
+                Swal.fire({
+                    title: '提示',
+                    text: `切换到 ${methodTypeText} 登录`,
+                    icon: 'warning',
+                    confirmButtonText: '知道了',
+                    background: '#1a1a2e',
+                    color: '#fff'
+                });
+            }
+        });
+    });
+
+    // 初始化和模拟扫描
+    updateQRCode();
+    simulateScan();
+
+    // 清理定时器
+    window.addEventListener('beforeunload', () => {
+        clearInterval(qrRefreshInterval);
+    });
+</script>
+</body>
+</html>
