@@ -49,7 +49,7 @@
             background: conic-gradient(
                     from 0deg,
                     transparent,
-                    rgba(255, 149, 0, 0.2),
+                    rgba(138, 43, 226, 0.2),
                     transparent 30%
             );
             animation: rotate 10s linear infinite;
@@ -68,7 +68,7 @@
         .logo h1 {
             font-size: 2rem;
             font-weight: 800;
-            background: linear-gradient(90deg, #ff9500, #ff6b35, #ff9500);
+            background: linear-gradient(90deg, #8a2be2, #9370db, #8a2be2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-size: 200% auto;
@@ -111,7 +111,7 @@
             left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #ff9500;
+            color: #8a2be2;
             font-size: 1.2rem;
             z-index: 2;
         }
@@ -129,63 +129,47 @@
         }
 
         .form-input:focus {
-            border-color: #ff9500;
-            box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.2);
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
             background: rgba(255, 255, 255, 0.1);
         }
 
-        .password-toggle {
+        .wallet-select {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            background: rgba(125, 120, 120, 0.07);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #dff5b5;
+            font-size: 1.1rem;
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+        }
+        .wallet-select-option {
+            background-color: #323232;
+        }
+
+        .wallet-select:focus {
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .select-arrow {
             position: absolute;
-            right: 18px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
             color: #a0a0c0;
-            cursor: pointer;
             font-size: 1.2rem;
-            z-index: 2;
-        }
-
-        .code-input-wrapper {
-            display: flex;
-            gap: 15px;
-        }
-
-        .code-input {
-            flex: 1;
-        }
-
-        .send-code-btn {
-            padding: 18px 25px;
-            background: linear-gradient(90deg, #ff9500, #ff6b35);
-            border: none;
-            border-radius: 16px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            min-width: 140px;
-        }
-
-        .send-code-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 149, 0, 0.3);
-        }
-
-        .send-code-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .send-code-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .login-btn {
             width: 100%;
             padding: 20px;
-            background: linear-gradient(90deg, #ff9500, #ff6b35);
+            background: linear-gradient(90deg, #8a2be2, #9370db);
             border: none;
             border-radius: 16px;
             color: white;
@@ -196,12 +180,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
-            box-shadow: 0 10px 20px rgba(255, 149, 0, 0.3);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
         }
 
         .login-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(255, 149, 0, 0.4);
+            box-shadow: 0 15px 30px rgba(138, 43, 226, 0.4);
         }
 
         .login-btn:active {
@@ -270,8 +254,8 @@
 
         .auth-method:hover .method-icon {
             background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 149, 0, 0.5);
-            box-shadow: 0 8px 16px rgba(255, 149, 0, 0.2);
+            border-color: rgba(138, 43, 226, 0.5);
+            box-shadow: 0 8px 16px rgba(138, 43, 226, 0.2);
         }
 
         .method-label {
@@ -283,9 +267,9 @@
 
         .userid .method-icon { color: #00d2ff; }
         .phone .method-icon { color: #3a7bd5; }
+        .email .method-icon { color: #ff9500; }
         .wechat .method-icon { color: #07c160; }
         .alipay .method-icon { color: #1677ff; }
-        .blockchain .method-icon { color: #8a2be2; }
 
         .active-method {
             position: relative;
@@ -300,8 +284,8 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #ff9500;
-            box-shadow: 0 0 10px #ff9500;
+            background: #8a2be2;
+            box-shadow: 0 0 10px #8a2be2;
         }
 
         .footer-links {
@@ -318,7 +302,7 @@
         }
 
         .footer-links a:hover {
-            color: #ff9500;
+            color: #8a2be2;
             text-decoration: underline;
         }
 
@@ -329,7 +313,7 @@
         }
 
         .hint a {
-            color: #ff9500;
+            color: #8a2be2;
             text-decoration: none;
         }
 
@@ -337,19 +321,63 @@
             text-decoration: underline;
         }
 
-        .remember-me {
+        .wallet-info {
             display: flex;
             align-items: center;
             margin-top: 15px;
-            font-size: 0.95rem;
-            color: #b0b0e0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .remember-me input {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            accent-color: #ff9500;
+        .wallet-icon {
+            font-size: 1.5rem;
+            color: #8a2be2;
+            margin-right: 15px;
+        }
+
+        .wallet-details {
+            flex: 1;
+        }
+
+        .wallet-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .wallet-address {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .signature-status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .status-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            color: #b0b0e0;
+            margin-bottom: 10px;
+        }
+
+        .status-detail {
+            font-size: 0.9rem;
+            color: #a0a0c0;
         }
 
         @media (max-width: 600px) {
@@ -365,12 +393,13 @@
             .auth-method {
                 width: 45%;
             }
-            .code-input-wrapper {
+            .wallet-info {
                 flex-direction: column;
+                text-align: center;
             }
-            .send-code-btn {
-                min-width: 100%;
-                padding: 16px;
+            .wallet-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -378,50 +407,62 @@
 <body>
 <div class="login-container">
     <div class="logo">
-        <h1>Email登录</h1>
+        <h1>DID登录</h1>
         <p>-- 统一身份认证平台 --</p >
     </div>
 
-    <form id="emailLoginForm" novalidate>
+    <form id="blockchainLoginForm">
         <div class="form-group">
-            <label class="form-label">Email地址</label>
+            <label class="form-label">选择钱包</label>
             <div class="input-wrapper">
-                <i class="input-icon fas fa-envelope"></i>
-                <input type="email" class="form-input" id="email" placeholder="输入你的Email地址" required>
+                <i class="input-icon fas fa-wallet"></i>
+                <select class="wallet-select" id="walletSelect" required>
+                    <option class="wallet-select-option" value="">选择你的Web3钱包</option>
+                    <option class="wallet-select-option" value="metamask">MetaMask</option>
+                    <option class="wallet-select-option" value="trustwallet">Trust Wallet</option>
+                    <option class="wallet-select-option" value="coinbase">Coinbase Wallet</option>
+                    <option class="wallet-select-option" value="phantom">Phantom</option>
+                    <option class="wallet-select-option" value="keplr">Keplr</option>
+                    <option class="wallet-select-option" value="other">其他钱包</option>
+                </select>
+                <i class="select-arrow fas fa-chevron-down"></i>
             </div>
+            <div class="hint">请确保已安装相应的钱包浏览器扩展</div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">密码 (密码、验证码二选一)</label>
+            <label class="form-label">DID地址</label>
             <div class="input-wrapper">
-                <i class="input-icon fas fa-lock"></i>
-                <input type="password" class="form-input" id="password" placeholder="输入你的密码" required>
-                <i class="password-toggle fas fa-eye" id="togglePassword"></i>
+                <i class="input-icon fas fa-link"></i>
+                <input type="text" class="form-input" id="didAddress" placeholder="did:ethr:0x..." readonly>
             </div>
-            <div class="hint"><a href="#"><i class="fas fa-key"></i> 忘记密码?</a ></div>
+            <div class="hint">连接钱包后自动填充</div>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">验证码 (密码、验证码二选一)</label>
-            <div class="code-input-wrapper">
-                <div class="input-wrapper code-input">
-                    <i class="input-icon fas fa-shield-alt"></i>
-                    <input type="text" class="form-input" id="captcha" placeholder="输入6位验证码" maxlength="6">
-                </div>
-                <button type="button" class="send-code-btn" id="sendCaptchaBtn">
-                    <i class="fas fa-paper-plane"></i> 发送
-                </button>
+        <div class="wallet-info" id="walletInfo" style="display: none;">
+            <div class="wallet-icon">
+                <i class="fas fa-wallet"></i>
             </div>
-            <div class="hint" id="countdownHint">点击 [发送]，系统将发送验证码到你的Email，有效期10分钟</div>
+            <div class="wallet-details">
+                <div class="wallet-name" id="walletName">未连接</div>
+                <div class="wallet-address" id="walletAddress">0x0000...0000</div>
+            </div>
         </div>
 
-        <div class="remember-me">
-            <input type="checkbox" id="rememberMe">
-            <label for="rememberMe">记住我 (30天内自动登录)</label>
+        <div class="signature-status" id="signatureStatus">
+            <div class="status-icon">
+                <i class="fas fa-signature"></i>
+            </div>
+            <div class="status-text" id="statusText">等待签名</div>
+            <div class="status-detail" id="statusDetail">请在钱包中确认签名请求</div>
         </div>
 
-        <button type="submit" class="login-btn" id="loginBtn">
-            <i class="fas fa-sign-in-alt"></i> 登录
+        <button type="button" class="login-btn" id="connectBtn">
+            <i class="fas fa-plug"></i> 连接钱包
+        </button>
+
+        <button type="submit" class="login-btn" id="loginBtn" style="display: none; margin-top: 15px;">
+            <i class="fas fa-sign-in-alt"></i> 签名登录
         </button>
     </form>
 
@@ -442,6 +483,12 @@
             </div>
             <span class="method-label">手机</span>
         </div>
+        <div class="auth-method email" data-method="email">
+            <div class="method-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <span class="method-label">Email</span>
+        </div>
         <div class="auth-method wechat" data-method="wechat">
             <div class="method-icon">
                 <i class="fab fa-weixin"></i>
@@ -454,12 +501,6 @@
             </div>
             <span class="method-label">支付宝</span>
         </div>
-        <div class="auth-method blockchain" data-method="blockchain">
-            <div class="method-icon">
-                <i class="fas fa-link"></i>
-            </div>
-            <span class="method-label">DID</span>
-        </div>
     </div>
 
     <div class="footer-links">
@@ -470,63 +511,147 @@
 </div>
 
 <script>
-    // 切换密码可见性
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    togglePassword.addEventListener('click', () => {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        togglePassword.classList.toggle('fa-eye');
-        togglePassword.classList.toggle('fa-eye-slash');
-    });
+    // 模拟钱包数据
+    const wallets = {
+        metamask: { name: 'MetaMask', icon: 'fab fa-ethereum' },
+        trustwallet: { name: 'Trust Wallet', icon: 'fas fa-shield-alt' },
+        coinbase: { name: 'Coinbase Wallet', icon: 'fas fa-coins' },
+        phantom: { name: 'Phantom', icon: 'fas fa-ghost' },
+        keplr: { name: 'Keplr', icon: 'fas fa-atom' },
+        other: { name: '其他钱包', icon: 'fas fa-wallet' }
+    };
 
-    // 发送验证码倒计时
-    const sendCaptchaBtn = document.getElementById('sendCaptchaBtn');
-    const countdownHint = document.getElementById('countdownHint');
-    let countdown = 0;
-    let countdownInterval = null;
-    function startCountdown(seconds) {
-        countdown = seconds;
-        sendCaptchaBtn.disabled = true;
-        countdownInterval = setInterval(() => {
-            countdown--;
-            countdownHint.textContent = `验证码已发送，${countdown}秒后可重新发送`;
+    // DOM元素
+    const walletSelect = document.getElementById('walletSelect');
+    const didAddressInput = document.getElementById('didAddress');
+    const walletInfo = document.getElementById('walletInfo');
+    const walletName = document.getElementById('walletName');
+    const walletAddress = document.getElementById('walletAddress');
+    const signatureStatus = document.getElementById('signatureStatus');
+    const statusText = document.getElementById('statusText');
+    const statusDetail = document.getElementById('statusDetail');
+    const connectBtn = document.getElementById('connectBtn');
+    const loginBtn = document.getElementById('loginBtn');
 
-            if (countdown <= 0) {
-                clearInterval(countdownInterval);
-                sendCaptchaBtn.disabled = false;
-                sendCaptchaBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发送';
-                countdownHint.textContent = '点击 [发送]，系统将发送验证码到你的Email，有效期10分钟';
-            }
-        }, 1000);
+    let connected = false;
+    let selectedWallet = '';
+    let mockAddress = '';
+
+    // 生成模拟地址
+    function generateMockAddress() {
+        const chars = '0123456789abcdef';
+        let address = '0x';
+        for (let i = 0; i < 40; i++) {
+            address += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return address;
     }
-    // 发送验证码
-    sendCaptchaBtn.addEventListener('click', () => {
-        const email = document.getElementById('email').value.trim();
 
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            // alert('请输入有效的Email地址');
+    // 连接钱包
+    connectBtn.addEventListener('click', () => {
+        selectedWallet = walletSelect.value;
+
+        if (!selectedWallet) {
             Swal.fire({
-                title: '提示', // 这里可以自定义标题
-                text: '请输入有效的Email地址',
+                title: '提示',
+                text: '请选择钱包类型',
                 icon: 'warning',
                 confirmButtonText: '知道了',
-                background: '#1a1a2e', // 可以匹配你页面的深色背景
+                background: '#1a1a2e',
                 color: '#fff'
             });
             return;
         }
 
-        // 模拟发送验证码API调用
-        sendCaptchaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
-        sendCaptchaBtn.disabled = true;
+        // 模拟连接过程
+        connectBtn.disabled = true;
+        connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 连接中...';
 
         setTimeout(() => {
-            sendCaptchaBtn.innerHTML = '<i class="fas fa-check"></i> 已发送';
-            startCountdown(60); // 60秒倒计时
-        }, 1000);
+            connected = true;
+            mockAddress = generateMockAddress();
+            const wallet = wallets[selectedWallet];
+
+            // 更新UI
+            walletName.textContent = wallet.name;
+            walletAddress.textContent = mockAddress;
+            didAddressInput.value = `did:ethr:${mockAddress}`;
+            walletInfo.style.display = 'flex';
+
+            connectBtn.style.display = 'none';
+            loginBtn.style.display = 'block';
+
+            // 重置连接按钮
+            connectBtn.disabled = false;
+            connectBtn.innerHTML = '<i class="fas fa-plug"></i> 连接钱包';
+
+            Swal.fire({
+                title: '钱包连接成功',
+                text: `${wallet.name} 已连接`,
+                icon: 'success',
+                confirmButtonText: '知道了',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+        }, 1500);
     });
 
+    // 签名登录
+    loginBtn.addEventListener('click', () => {
+        if (!connected) {
+            Swal.fire({
+                title: '提示',
+                text: '请先连接钱包',
+                icon: 'warning',
+                confirmButtonText: '知道了',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+            return;
+        }
+
+        // 显示签名状态
+        signatureStatus.style.display = 'block';
+        statusText.textContent = '等待签名';
+        statusDetail.textContent = '请在钱包中确认签名请求';
+        statusIcon.className = 'fas fa-signature';
+        statusIcon.style.color = '#8a2be2';
+
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 等待签名...';
+
+        // 模拟签名过程
+        setTimeout(() => {
+            // 模拟签名成功
+            statusText.textContent = '签名成功';
+            statusDetail.textContent = '验证身份信息...';
+            statusIcon.className = 'fas fa-check-circle';
+            statusIcon.style.color = '#34c759';
+
+            setTimeout(() => {
+                statusText.textContent = '登录成功';
+                statusDetail.textContent = '正在跳转到用户中心...';
+                statusIcon.className = 'fas fa-user-check';
+                statusIcon.style.color = '#34c759';
+
+                loginBtn.innerHTML = '<i class="fas fa-check"></i> 登录成功';
+                loginBtn.style.background = 'linear-gradient(90deg, #34c759, #2ecc71)';
+
+                // 跳转模拟
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'DID登录成功',
+                        text: '去中心化身份验证完成！',
+                        icon: 'success',
+                        confirmButtonText: '进入用户中心',
+                        background: '#1a1a2e',
+                        color: '#fff'
+                    });
+                }, 1000);
+            }, 1000);
+        }, 2000);
+    });
+    
     // 切换登录方式
     const authMethods = document.querySelectorAll('.auth-method');
     authMethods.forEach(method => {
@@ -542,15 +667,15 @@
                 methodTypeText = '用户ID';
             } else if(methodType === 'phone') {
                 methodTypeText = '手机';
+            } else if(methodType === 'email') {
+                methodTypeText = 'Email';
             } else if(methodType === 'wechat') {
                 methodTypeText = '微信';
             } else if(methodType === 'alipay') {
                 methodTypeText = '支付宝';
-            } else if(methodType === 'blockchain') {
-                methodTypeText = 'DID';
             }
             console.log(`切换到 ${methodTypeText} 登录`);
-            if (methodType !== 'email') {
+            if (methodType !== 'blockchain') {
                 Swal.fire({
                     title: '提示',
                     text: `切换到 ${methodTypeText} 登录`,
@@ -563,88 +688,16 @@
         });
     });
 
-    // 表单提交：登录
-    document.getElementById('emailLoginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const captcha = document.getElementById('captcha').value.trim();
-        const loginBtn = document.getElementById('loginBtn');
-        const originalText = loginBtn.innerHTML;
-
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            Swal.fire({
-                title: '提示',
-                text: '请输入有效的Email地址',
-                icon: 'warning',
-                confirmButtonText: '知道了',
-                background: '#1a1a2e',
-                color: '#fff'
-            });
-            return;
+    // 钱包选择变化
+    walletSelect.addEventListener('change', () => {
+        if (connected) {
+            // 如果已连接，断开连接
+            connected = false;
+            walletInfo.style.display = 'none';
+            loginBtn.style.display = 'none';
+            connectBtn.style.display = 'block';
+            signatureStatus.style.display = 'none';
+            didAddressInput.value = '';
         }
-
-        if(!password && !captcha) {
-            // alert('请输入密码或验证码');
-            Swal.fire({
-                title: '提示', // 这里可以自定义标题
-                text: '请输入密码或验证码',
-                icon: 'warning',
-                confirmButtonText: '知道了',
-                background: '#1a1a2e', // 可以匹配你页面的深色背景
-                color: '#fff'
-            });
-            return;
-        }
-
-        if (password && password.length < 6) {
-            Swal.fire({
-                title: '提示',
-                text: '密码至少需要6个字符',
-                icon: 'warning',
-                confirmButtonText: '知道了',
-                background: '#1a1a2e',
-                color: '#fff'
-            });
-            return;
-        }
-
-        if (captcha && !/^[0-9]{6}$/.test(captcha)) {
-            Swal.fire({
-                title: '提示',
-                text: '请输入6位数字验证码',
-                icon: 'error',
-                confirmButtonText: '知道了',
-                background: '#1a1a2e',
-                color: '#fff'
-            });
-            return;
-        }
-
-        // 模拟API调用
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 验证中...';
-        loginBtn.disabled = true;
-
-        setTimeout(() => {
-            // 模拟成功登录
-            loginBtn.innerHTML = '<i class="fas fa-check"></i> 登录成功';
-            loginBtn.style.background = 'linear-gradient(90deg, #34c759, #2ecc71)';
-
-            setTimeout(() => {
-                loginBtn.innerHTML = originalText;
-                loginBtn.disabled = false;
-                loginBtn.style.background = 'linear-gradient(90deg, #ff9500, #ff6b35)';
-
-                Swal.fire({
-                    title: '提示', // 这里可以自定义标题
-                    text: '登录成功！欢迎回来。',
-                    icon: 'success',
-                    confirmButtonText: '进入应用',
-                    background: '#1a1a2e',
-                    color: '#fff'
-                });
-            }, 2000);
-        }, 1500);
     });
 </script>

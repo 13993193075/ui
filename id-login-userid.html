@@ -118,7 +118,7 @@
 
         .form-input {
             width: 100%;
-            padding: 18px 20px 18px 55px;
+            padding: 18px 20px 18px 50px;
             background: rgba(255, 255, 255, 0.07);
             border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
@@ -440,19 +440,16 @@
                     methodTypeText = 'DID'
                 }
                 console.log(`切换到 ${methodTypeText} 登录`);
-
-                // 跳转到对应的登录页面
                 if (methodType !== 'userid') {
                     // alert(`切换到 ${methodType} 登录`);
                     Swal.fire({
-                        title: '提示', // 这里可以自定义标题
+                        title: '提示',
                         text: `切换到 ${methodTypeText} 登录`,
                         icon: 'warning',
                         confirmButtonText: '知道了',
-                        background: '#1a1a2e', // 可以匹配你页面的深色背景
+                        background: '#1a1a2e',
                         color: '#fff'
                     });
-                    // window.location.href = `/${methodType}-login.html`;
                 }
             });
         });
