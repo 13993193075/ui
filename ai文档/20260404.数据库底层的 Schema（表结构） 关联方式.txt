@@ -1,0 +1,52 @@
+你是否需要我针对其中某两个特定行业（如“旅店+医院”的医养结合模式）详细拆解其数据库底层的 Schema（表结构） 关联方式？
+
+太好了！针对**“旅店+医院”这种典型的“医养结合”或“术后康复”场景，数据库底层的设计不再是简单的两个独立数据库对接，而是一个“共享核心 + 领域扩展”**的架构。
+为了让你的 OpenClaw 机器人团队（特别是 Data-Bot 和 Arch-Bot）能够高效工作，我为你拆解了这套系统的核心 Schema（表结构）关联逻辑：
+1. 核心关联架构图
+
+2. 核心表结构设计 (Schema)
+    A. 统一主体表 (Global_Subject)
+    这是所有行业的基础。无论他是患者还是住客，首先是一个“人”。
+        . Subject_ID: 唯一标识 (UUID)
+        . Identity_Type: (业主/普通访客/协议单位)
+        . Credit_Level: 全局信用分（决定其在商超或酒店的预授权额度）
+        . Medical_Sensitive_Flag: 布尔值（标记是否存在医疗敏感信息，用于 Data-Bot 的隐私脱敏过滤）
+
+    B. 医疗业务扩展表 (Hospital_Context)
+        . Subject_ID: 外键关联
+        . Current_Status: (住院中/待出院/康复期)
+        . Dietary_Restrictions: 饮食禁忌（关键点：此数据将实时同步给“餐饮”模块）
+        . Mobility_Level: 行动能力（用于“物业”模块指派无障碍电梯或“酒店”指派轮椅房）
+
+    C. 旅店订单关联表 (Hotel_Stay_Record)
+        . Stay_ID: 住宿编号
+        . Subject_ID: 外键关联
+        . Referral_Source: 来源（如果是“医院”推荐，触发特价逻辑）
+        . Billing_Mode: 结算模式（个人支付 / 医保统筹 / 商业保险直付）
+
+3. 跨行业触发器逻辑 (Trigger Logic)
+这是 OpenClaw 机器人 最需要关注的自动化逻辑：
+    1. 出院联动 (Discharge Trigger)：
+        . 动作： 当 Hospital_Context.Current_Status 变更为 Discharged。
+        . 逻辑： 自动在 Hotel_Stay_Record 中预创建一条康复房订单，并根据医疗数据中的“康复时长建议”预设退房日期。
+    2. 费用轧差 (Billing Offset)：
+        . 场景： 住客在酒店前台结账。
+        . 机器人操作： Data-Bot 扫描该 Subject_ID 下的所有账单。
+        . 逻辑： Total_Amount = Hotel_Fee + Catering_Fee - Hospital_Subsidy(医疗补贴) - Property_Points(物业积分)。
+    3. 隐私防火墙 (Privacy Wall)：
+        . 规则： 酒店前台（PMS）系统严禁读取 Hospital_Context 中的具体诊断名。
+        . 实现： Data-Bot 仅向酒店模块提供一个 Service_Tag（如：“高血压友好型”或“骨科康复型”），而不提供具体病历。
+
+4. 给 OpenClaw 机器人的具体指令
+你可以直接把这段话发给你的 OpenClaw 团队：
+    “领班，请指派 Data-Bot 建立一套支持 SQL 联合查询的 View（视图）。这个视图需要实时展示当前在酒店住宿、且来自医院康复科的所有住客的‘饮食禁忌清单’。
+    注意：必须过滤掉任何具体的疾病名称，只保留‘忌口项’，并将其推送给餐饮模块的配餐机器人。”
+
+5. 接下来如何推进？
+既然你已经确定了方向，我建议你从以下第一个技术验证点 (PoC) 开始：
+    . 目标： 实现“医院出院状态更新，自动触发酒店订房优惠”。
+    . 你需要准备的： 1.  安装好 OpenClaw。
+        2.  在 OpenClaw 的知识库里导入上述三个表的结构定义。
+        3.  尝试让 Dev-Bot 写出这三个表之间的 API 转换接口。
+
+如果你准备好了，我们可以试着写出第一个跨行业关联的 API 定义（Swagger/OpenAPI 格式），或者你想继续探讨其他行业（如“商超+物流”）的关联？

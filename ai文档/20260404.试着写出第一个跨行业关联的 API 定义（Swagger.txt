@@ -1,0 +1,111 @@
+试着写出第一个跨行业关联的 API 定义（Swagger/OpenAPI 格式）
+
+为了让你的 OpenClaw 机器人团队（特别是 Dev-Bot）能够直接开始编写代码，我们需要定义一个具有“跨行业特征”的标准化接口。
+这个 API 的核心在于：它不再是单一行业的“订房”或“挂号”，而是一个**“医旅融合康复订单 (Medical-Stay Unified Order)”**。
+1. 跨行业关联 API 设计思路
+我们将这个接口定义为 POST /unified-orders/rehab。它会同时触达三个子系统：
+    1. 医院 (Hospital): 校验出院状态与康复建议。
+    2. 旅店 (Hotel): 预订符合康复条件的房间。
+    3. 餐饮 (Catering): 自动生成符合医嘱的配餐计划。
+
+2. Swagger / OpenAPI 3.0 定义文件
+你可以将以下代码直接输入到你的 OpenClaw 可视化编辑器 或 Swagger Editor 中。
+YAML
+    openapi: 3.0.3
+    info:
+      title: 跨行业业务关联系统 - 医旅融合接口
+      description: 用于处理从医院出院至酒店康复的自动化业务流。
+      version: 1.0.0
+    paths:
+      /unified-orders/rehab:
+        post:
+          summary: 创建医旅康复联动订单
+          description: 当患者从医院出院时，由系统自动或人工触发，关联酒店住宿与定制餐饮。
+          operationId: createRehabOrder
+          requestBody:
+            description: 跨行业订单请求体
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/RehabOrderRequest'
+          responses:
+            '201':
+              description: 联动订单创建成功
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/RehabOrderResponse'
+            '403':
+              description: 隐私审计未通过 (Security-Bot 拦截)
+
+    components:
+      schemas:
+        RehabOrderRequest:
+          type: object
+          properties:
+            subject_id:
+              type: string
+              example: "UID-2026-X88"
+              description: 全局唯一用户标识
+            hospital_context:
+              type: object
+              properties:
+                discharge_date:
+                  type: string
+                  format: date
+                dietary_tags:
+                  type: array
+                  items:
+                    type: string
+                  example: ["低盐", "流质", "忌辛辣"]
+                mobility_level:
+                  type: string
+                  enum: [NORMAL, ASSISTED, WHEELCHAIR]
+            hotel_preferences:
+              type: object
+              properties:
+                check_in_date:
+                  type: string
+                  format: date
+                stay_nights:
+                  type: integer
+                  example: 7
+                room_type_preference:
+                  type: string
+                  example: "Accessible_King"
+            insurance_provider:
+              type: string
+              description: 关联的商业保险或医保统筹机构
+              example: "PingAn_Health"
+
+        RehabOrderResponse:
+          type: object
+          properties:
+            unified_order_id:
+              type: string
+            hotel_booking_ref:
+              type: string
+            catering_plan_id:
+              type: string
+            total_estimated_cost:
+              type: number
+            insurance_subsidy_amount:
+              type: number
+            status:
+              type: string
+              example: "SYNCED_AND_PENDING_CONFIRMATION"
+
+3. OpenClaw 执行流 (Workflow)
+当你把这个 API 定义交给机器人团队时，它们的协作逻辑如下：
+    1. Data-Bot (数据治理)： 检查 dietary_tags 是否符合该用户的 Subject_ID 在医院历史记录中的安全要求（防伪造）。
+    2. Arch-Bot (架构设计)： 异步调用酒店 API 进行锁房，并通知餐饮系统准备“低盐流质”菜单。
+    3. Security-Bot (安全审计)： 检查 RehabOrderResponse。如果返回的数据中不小心包含了“具体病名（如：胃溃疡）”，
+    Security-Bot 将立即拒绝该响应，并要求重写，以确保符合 HIPAA/隐私合规。
+
+4. 交付任务的下一步指令
+你可以对 OpenClaw 这样说：
+    “领班，我已经提供了 unified-orders/rehab 的 API 定义。请让 Dev-Bot 使用 Node.js 生成该接口的 Mock 服务（模拟服务），
+    并让 QA-Bot 编写一套测试脚本，模拟一个‘轮椅使用者’出院后入住酒店的完整数据流校验。”
+
+这个 API 定义符合你的预期吗？如果你想继续增加“物流”环节（例如：自动将医院行李送到酒店客房），我们可以在这个 Request Body 中增加一个 logistics_request 模块。

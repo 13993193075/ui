@@ -1,0 +1,64 @@
+如何安装并使用OpenClaw
+
+要搭建你所构思的复杂业务机器人团队，OpenClaw 是一个非常合适的开源 Agent 框架。
+它支持长连接、多渠道集成（如企业微信、钉钉）以及复杂的任务编排。
+
+以下是根据 2026 年最新生产标准 整理的 OpenClaw 安装与初始化指南：
+1. 环境准备
+在开始之前，请确保你的服务器或本地开发环境具备以下基础：
+    . Node.js: 建议版本 22.0+ (LTS)。
+    . 包管理器: 推荐使用 pnpm（比 npm 更快，适合多模块项目）。
+    . 代码工具: Git。
+
+2. 安装步骤
+OpenClaw 采用源码构建模式，以方便你后续自定义各种行业机器人逻辑。
+    第一步：克隆源码
+    打开终端，运行：
+    Bash
+        git clone https://github.com/openclaw/openclaw.git
+        cd openclaw
+
+    第二步：安装依赖与构建
+    Bash
+        pnpm install
+        pnpm ui:build  # 构建前端管理界面
+        pnpm build     # 编译核心代码
+
+    第三步：初始化配置
+    运行配置向导，这步非常关键，你需要在这里输入你的 大模型 API Key（如 Gemini, OpenAI 或本地驱动）：
+    Bash
+        pnpm start --onboarding
+    提示： 在向导中选择 QuickStart 模式。你需要准备好 API Base URL 和 Model ID（例如 gemini-1.5-pro）。
+
+3. 核心功能配置：连接你的“行业场景”
+为了让你在企业微信或钉钉中使用机器人团队，你需要配置渠道 (Channels)。
+    1. 添加渠道：
+    Bash
+        npx @wecom/wecom-openclaw-cli install  # 以企业微信为例
+        openclaw channels add
+    2. 配对机器人： 根据命令行提示，输入你在企业微信后台创建的机器人 Bot ID 和 Secret。
+    3. 获取密钥： 在企业微信中给机器人发消息，它会回传一个配置密钥，将其填回终端即可完成配对。
+4. 如何“使用”并交付任务
+安装完成后，你将拥有一个 Web 管理后台（通常在 http://localhost:3000）。
+    A. 导入你的“跨行业关系矩阵”
+    在 OpenClaw 的 Knowledge (知识库) 模块中：
+        . 上传你之前整理的业务矩阵 PDF 或 Markdown。
+        . 系统会自动将其向量化并存入内置的向量数据库（RAG）。
+
+    B. 创建机器人成员 (Agents)
+    在 Agents 标签页，点击“新建”，参照我们之前的规划：
+        . 角色名： Data-Bot (数据治理机器人)
+        . System Prompt： 填入你在“标准化提示词库”中定义的逻辑。
+        . Skills： 勾选 Database Access 或 API Caller。
+
+    C. 启动协作流 (Workflows)
+    OpenClaw 支持可视化连线。你可以拖入三个节点：
+        1. 输入： 接收你的自然语言指令。
+        2. 处理： 连向 Arch-Bot 梳理架构，再连向 Dev-Bot 生成代码。
+        3. 输出： 将结果发送到你的企业微信群。
+
+5. 开发者建议
+    . 调试： 使用 pnpm dev 运行开发模式，可以直接在控制台看到机器人之间的对话过程。
+    . 扩展性： 既然你的系统涉及医疗和零售，建议在 src/plugins 目录下为不同行业编写专门的 Plugin，封装各行业的私有 API。
+
+你现在手头有现成的 API Key 吗？ 如果有，建议先从安装 Node.js 和克隆代码开始。如果在安装过程中遇到任何 pnpm 报错，随时告诉我。
