@@ -1,0 +1,71 @@
+给我详细介绍一下编写IDENTITY.md的语法规则
+
+在 OpenClaw（小龙虾） 的体系中，IDENTITY.md 并不是一个普通的说明文档，它是 AI Agent 的指令配置文件。
+它采用 Markdown 格式，但编写时需要遵循一套特定的“提示词工程（Prompt Engineering）”语法规则，以确保底层的大模型（LLM）能够精准执行自动化任务。
+以下是编写一个高质量 IDENTITY.md 的详细语法规则：
+
+1. 结构化模块语法 (Structural Segments)
+建议使用 Markdown 的标题级别（#, ##）来划分不同的逻辑层级，这有助于 LLM 快速建立上下文权重。
+    . # ROLE (身份定义)：定义 AI 的职业背景、性格和核心能力。
+    . ## OBJECTIVES (核心目标)：定义 AI 存在的终极意义（例如：协助编程、网页对账）。
+    . ## CONSTRAINTS (硬性约束)：定义绝对不能做的事情（例如：禁止删除数据）。
+    . ## GUIDELINES (操作指南)：定义执行任务时的思维逻辑。
+
+2. 指令性限定词 (Directive Syntax)
+为了消除 AI 的模糊感，必须使用强确定性的词汇：
+    . Must / Must Not (必须/严禁)：用于关键的安全界限。
+    . Always / Never (总是/永不)：用于固定的行为模式。
+    . Prioritize (优先)：当出现多个操作选项时，告诉 AI 如何权衡。
+    . Step-by-Step (逐步)：强制 AI 开启“思维链（CoT）”，先思考再动作。
+
+3. 变量与上下文引用 (Context Reference)
+在集成到业务系统中时，你可以使用占位符语法，让后端程序动态替换：
+    . 使用 {{VARIABLE_NAME}} 或 {{USER_INPUT}}。
+    . 示例：When on the {{TARGET_WEBSITE}}, search for the term {{QUERY}}.
+
+4. 视觉感知引导语法 (Visual Grounding)
+由于 OpenClaw 依赖视觉，你需要在 IDENTITY.md 中规定 AI 如何处理看到的元素：
+    . 元素定位协议：要求 AI 描述位置，如 Top-Left, Centered, Near the 'Login' button。
+    . 交互确认：规定 AI 在点击前必须进行“视觉确认”（Visual Verification），例如：“点击搜索按钮后，确认页面出现了搜索结果列表”。
+
+5. 输出格式定义 (Output Schema)
+这是为了让 OpenClaw 的 Python/Node.js 宿主程序能够解析 AI 的指令。
+通常要求 AI 遵循 JSON 代码块 格式：
+    . 语法要求：You must output your final action in a JSON block.
+    . 固定字段：thought, action, coordinate, element_id。
+
+6. 实战示例：编程助手专用的 IDENTITY.md 语法
+如果你想让它协助你编程，你的 IDENTITY.md 应该这样写：
+Markdown
+    # ROLE: Senior Full-Stack Programming Agent
+
+    ## CONTEXT
+    - 你正运行在 OpenClaw 框架下。
+    - 你的目标是通过浏览器查阅技术文档，并为用户生成高质量的代码建议。
+
+    ## OPERATIONAL RULES
+    1. **Source Verification**:
+       - 查阅文档时，必须优先查看官方域名（如 `docs.python.org`）。
+       - 禁止引用超过 3 年未更新的过时库。
+    2. **Coding Standards**:
+       - 始终输出包含异常处理（Try-Except/Catch）的代码。
+       - 代码风格必须遵循该语言的官方规范（如 PEP 8）。
+    3. **Safety First**:
+       - 严禁在浏览器中输入或提交任何 API Key 或明文密码。
+
+    ## REASONING PROCESS
+    - 第一步：观察页面，定位导航栏中的搜索框。
+    - 第二步：执行搜索，点击相关性最高的链接。
+    - 第三步：提取文档中的代码片段，并根据用户的项目上下文进行重构。
+
+    ## FINAL ACTION FORMAT
+    - 所有动作指令必须包裹在 ```json 代码块中。
+
+编写技巧总结
+    规则名称 | 核心要点 | 错误示范 | 正确示范
+        原子化 | 每个条目只讲一件事 |  查文档并写代码且报错 | 1. 查文档；2. 提取代码；3. 处理错误
+        负向约束 | 明确禁止项 | 尽量别乱点 | NEVER click 'Delete' or 'Submit' buttons.
+        情境注入 | 告知当前环境 | 你是一个 AI | 你是一个集成在 Chrome 浏览器里的编程顾问。
+        格式强迫 | 规定回复模板 | 随便回 | MUST wrap your answer in valid JSON.
+
+你目前的编程环境是什么样的？（例如：VS Code + 某个特定框架）我可以帮你针对性地微调这套语法。
