@@ -1,0 +1,79 @@
+我的nodejs项目使用的数据库是MongoDB
+
+既然你的 Node.js 项目配合的是 MongoDB，那么使用 Docker Compose 是最完美的方案。
+它可以让你一键启动“应用 + 数据库”，并且自动处理它们之间的网络连接，省去了手动配置 IP 的麻烦。
+你可以直接参考这个配置：
+
+1. 准备 docker-compose.yml
+在项目的根目录下创建这个文件。它会同时定义你的 Node 服务和 MongoDB 服务：
+YAML
+    version: '3.8'
+    services:
+      # 数据库服务
+      mongodb:
+        image: mongo:latest
+        container_name: my_mongodb
+        ports:
+          - "27017:27017"
+        volumes:
+          - mongo-data:/data/db # 数据持久化，防止重启后数据丢失
+
+      # Node.js 应用服务
+      app:
+        build: .
+        container_name: my_node_app
+        ports:
+          - "3000:3000"
+        environment:
+          # 注意：这里的 mongodb 是上面的服务名，Docker 会自动解析为对应的 IP
+          - MONGO_URL=mongodb://mongodb:27017/myapp
+        depends_on:
+          - mongodb # 确保数据库先启动
+
+    volumes:
+      mongo-data: # 定义一个命名卷
+
+2. 修改代码中的连接字符串
+这是最关键的一步。在你的 Node.js 代码（比如 db.js 或 app.js）中，不要使用 localhost。
+在 Docker 网络中，容器之间通过 服务名 通信：
+JavaScript
+    // 以前的写法
+    // const url = 'mongodb://localhost:27017/myapp';
+
+    // Docker 内部的写法（mongodb 是 yml 文件里定义的 service 名）
+    const url = process.env.MONGO_URL || 'mongodb://mongodb:27017/myapp';
+
+    mongoose.connect(url)
+      .then(() => console.log('MongoDB 连接成功！'))
+      .catch(err => console.error('连接失败：', err));
+
+3. 启动项目
+只需要在终端输入一行命令：
+    Bash
+        docker-compose up -d
+    . -d 表示以后台模式运行。
+    . Docker 会自动下载 Mongo 镜像、构建你的 Node 镜像，并创建一个虚拟网络把它们连在一起。
+
+💡 进阶小贴士
+    1. 数据持久化
+    在上面的 yml 配置中，我添加了 volumes: - mongo-data:/data/db。
+        . 为什么要加？ 默认情况下，容器一旦删除，里面的数据也会消失。
+        . 作用： 这行配置把容器里的数据库文件夹映射到了你宿主机的硬盘上。
+        即使你执行了 docker-compose down，下次启动时数据依然还在。
+
+    2. 管理工具
+    如果你想可视化管理数据库，可以在 yml 中再加一个 mongo-express 服务（一个 Web 版的数据库管理界面）：
+        YAML
+            mongo-express:
+                image: mongo-express
+                ports:
+                  - "8081:8081"
+                environment:
+                  - ME_CONFIG_MONGODB_SERVER=mongodb
+    启动后，访问 localhost:8081 就能直接在浏览器里看数据了。
+
+    3. 等待数据库就绪
+    有时候 MongoDB 启动较慢，Node.js 可能会因为连接不上而报错退出。
+    建议在代码中加入重试机制，或者使用 wait-for-it.sh 等脚本来确保数据库完全 Ready 后再启动主程序。
+
+你目前在连接数据库时有遇到具体的报错吗？如果有，可以贴出来我帮你看看。

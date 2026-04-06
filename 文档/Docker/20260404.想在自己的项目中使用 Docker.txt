@@ -1,0 +1,60 @@
+想在自己的项目中使用 Docker
+
+既然你打算在项目实战中使用 Docker，那我们直接进入“实操思维”。
+要在项目里跑起 Docker，通常只需要完成 “三步走”。
+
+第一步：编写 Dockerfile（制作说明书）
+Dockerfile 是一个文本文件，用来告诉 Docker 如何构建你的镜像。假设你有一个简单的 Node.js 或 Python 项目：
+Dockerfile
+    # 1. 指定基础镜像（比如带 Python 环境的 Linux）
+    FROM python:3.9-slim
+
+    # 2. 设置工作目录
+    WORKDIR /app
+
+    # 3. 复制项目文件到镜像里
+    COPY . .
+
+    # 4. 安装依赖
+    RUN pip install -r requirements.txt
+
+    # 5. 告诉容器启动时执行什么命令
+    CMD ["python", "app.py"]
+
+第二步：构建并运行（动手变现）
+在项目根目录下打开终端，执行以下命令：
+    1. 构建镜像：
+        docker build -t my-project:v1 .
+        （-t 是给镜像起个名字，. 表示当前目录）
+
+    2. 启动容器：
+        docker run -d -p 5000:5000 --name running-app my-project:v1
+        （-d 后台运行，-p 把容器的 5000 端口映射到你电脑的 5000 端口）
+
+第三步：使用 Docker Compose（一键启动全家桶）
+真实项目通常不只是一个代码包，还需要 数据库 (MySQL)、缓存 (Redis) 等。手动一个个启动太累了，
+这时就要用 Docker Compose。
+    你只需要写一个 docker-compose.yml 文件：
+        YAML
+            version: '3.8'
+            services:
+              web:
+                build: .
+                ports:
+                  - "5000:5000"
+                depends_on:
+                  - db
+              db:
+                image: postgres:15
+                environment:
+                  POSTGRES_PASSWORD: example
+    然后只需要一行命令：
+        docker-compose up -d
+    你的代码、数据库就会自动关联并全部启动。
+
+避坑指南（经验之谈）
+    1. .dockerignore 文件：一定要写这个！就像 .gitignore 一样，把 node_modules 或 venv 排除在外，否则构建镜像会非常慢且体积巨大。
+    2. 挂载卷 (Volumes)：在开发阶段，建议使用 -v 参数把本地代码挂载到容器。这样你改动本地代码，容器里会实时生效，不需要重新构建镜像。
+    3. 镜像瘦身：尽量使用 -slim 或 -alpine 版本的基础镜像，能让你的镜像从 1GB 缩减到 100MB。
+
+你的项目目前是用什么编程语言写的？我可以根据你的具体技术栈给你提供一个精准的 Dockerfile 模板。
