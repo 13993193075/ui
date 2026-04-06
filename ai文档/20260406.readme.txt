@@ -1,0 +1,8 @@
+readme
+
+我是一名全栈程序员，熟悉html、js、ts、vue3、react、nodejs、MongoDB、PostgreSQL，
+我需要开发一个跨行业但数据有关联的非常复杂的业务系统，
+并打算建立一个OpenClaw机器人技术团队来协助我完成这个任务。
+
+团队构成如下：
+1、
