@@ -1,0 +1,79 @@
+我使用的是pnpm
+
+既然你使用的是 pnpm，那处理 Monorepo 就变得简单多了。pnpm 天生支持 Workspace，
+并且提供了一个专门为 Docker 设计的命令：pnpm deploy。
+
+这个命令会提取目标项目及其所有依赖（包括本地的 shared 库），并将它们修剪（Prune）到一个独立的目录中，
+非常适合放入 Docker 镜像。
+
+1. 核心流程：使用 pnpm deploy
+你不需要手动去处理复杂的层级关系，Dockerfile 的逻辑如下：
+Dockerfile
+    # 第一阶段：基础环境
+    FROM node:20-slim AS base
+    ENV PNPM_HOME="/pnpm"
+    ENV PATH="$PNPM_HOME:$PATH"
+    RUN corepack enable # 启用 pnpm
+
+    # 第二阶段：构建阶段
+    FROM base AS build
+    COPY . /usr/src/app
+    WORKDIR /usr/src/app
+
+    # 使用缓存挂载加速安装
+    RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+    # --- 关键步骤：部署 ---
+    # 假设你的 Node.js 项目在 apps/node-server
+    # 这会将 node-server 及其依赖（含本地 shared 库）提取到 /out
+    RUN pnpm --filter=node-server --prod deploy /out
+
+    # 第三阶段：运行阶段（保持镜像精简）
+    FROM base AS runtime
+    WORKDIR /app
+
+    # 只从构建阶段拷贝提取后的成品
+    COPY --from=build /out .
+
+    EXPOSE 3000
+    CMD [ "node", "index.js" ]
+
+2. 为什么在 pnpm Monorepo 中要这样写？
+    解决“硬链接”问题
+        pnpm 默认使用硬链接（Hard Links）来共享依赖。如果你直接 COPY apps/node-server，
+        Docker 镜像里其实只有一堆指向不存在地址的链接。pnpm deploy 会把这些链接物理化，确保镜像内代码完整。
+
+    自动处理本地依赖
+        如果 node-server 依赖了 packages/shared-utils，pnpm deploy 会自动把 shared-utils 编译后的产物打包进去，
+        你不需要在 Dockerfile 里写一堆 COPY 命令。
+
+3. 针对 Vue 3 前端的处理
+如果 Monorepo 里的 Vue 3 项目也要打包，逻辑类似，但最后一步通常交给 Nginx：
+Dockerfile
+    # ... 前面的构建步骤同上 ...
+
+    # 执行前端构建
+    RUN pnpm --filter=vue-app build
+
+    # 运行阶段切换到 Nginx
+    FROM nginx:stable-alpine
+    # 注意路径：通常在 apps/vue-app/dist
+    COPY --from=build /usr/src/app/apps/vue-app/dist /usr/share/nginx/html
+    # 别忘了之前提到的处理 404 的 nginx.conf
+    COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+    EXPOSE 80
+
+4. 实战建议
+    . 构建上下文：始终在 Monorepo 根目录 执行构建命令：
+        docker build -t my-node-app -f apps/node-server/Dockerfile .
+
+    . .dockerignore：根目录的 .dockerignore 必须排除掉所有的 node_modules，
+    让 Docker 内部的 pnpm install 自己去生成，避免架构冲突（比如 Mac 下编译的二进制文件跑在 Linux 容器里）。
+
+    . 使用 Docker Compose 编排：
+    在根目录写一个 docker-compose.yml，分别为 node-server、vue-app 和 mongodb 定义服务。
+    它们可以通过服务名直接通信。
+
+你现在的共享库（Shared Packages）里，主要是纯 TypeScript 函数，还是包含了一些需要预编译的 Vue 组件？
+如果是后者，记得在 deploy 之前先运行全局的 pnpm build。

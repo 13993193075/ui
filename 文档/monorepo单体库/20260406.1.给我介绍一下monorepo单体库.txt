@@ -1,0 +1,51 @@
+给我介绍一下monorepo单体库
+
+简单来说，Monorepo（Monolithic Repository）是一种项目代码管理策略，
+指的是将多个项目（可能是相互关联的，也可能是独立的）的代码存放在同一个代码仓库中。
+
+这与传统的 Multi-repo（每个项目一个仓库）恰恰相反。
+像 Google、Meta、Microsoft 和 Uber 这样的大厂，几乎都是 Monorepo 的忠实信徒。
+
+1. Monorepo 的核心架构
+在一个 Monorepo 中，你的目录结构通常长这样：
+Plaintext
+    /my-monorepo
+      ├── /packages
+      │     ├── /web-app        (React 项目)
+      │     ├── /mobile-app     (React Native 项目)
+      │     └── /shared-ui      (共享组件库)
+      ├── /libs
+      │     └── /api-helpers    (共享工具函数)
+      ├── package.json          (全局配置)
+      └── turbo.json/nx.json    (构建工具配置)
+
+2. 为什么要用 Monorepo？（优势）
+    . 代码复用极其简单：如果你在 shared-ui 里改了一个按钮样式，web-app 和 mobile-app 可以立即引用，
+    不需要发布 npm 包，也不需要手动在多个仓库间同步。
+
+    . 原子提交（Atomic Commits）：当你修改了一个公共 API，你可以同时修改所有调用该 API 的子项目，
+    并作为一个 Commit 提交。这保证了代码的一致性，不会出现“A 项目更新了，B 项目还没跟上而挂掉”的情况。
+
+    . 依赖管理统一：所有项目共用一套工程配置（如 ESLint, Prettier, TypeScript 配置），
+    避免了每个项目都要重复配置一遍的痛苦。
+
+    . 透明度高：团队成员可以轻松查看和理解整个系统的代码，打破了项目间的隔阂。
+
+3. 它有哪些挑战？（劣势）
+    . 性能压力：随着代码量增长，Git 操作（如 git clone, git status）会变慢。
+    . 权限控制难：在同一个仓库里，很难限制某人只能看 A 项目而不能看 B 项目。
+    . CI/CD 复杂度：如果每次改动都重新构建所有项目，效率会极低。因此需要增量构建工具（只构建受影响的部分）。
+
+4. 常用工具链
+如果你想搭建一个 Monorepo，通常不会“裸奔”，而是配合以下工具：
+    工具 | 特点
+        Turborepo | Vercel 出品，速度极快，上手简单，适合前端项目。
+        Nx | 功能最强大，支持全栈，有强大的可视化依赖图分析。
+        Lerna | 老牌工具，主要用于管理包的发布版本（现在常与 Nx 配合使用）。
+        pnpm / Yarn Workspaces | 基础层工具，主要解决多包的依赖安装和软链接问题。
+
+5. 什么时候该用它？
+    . 该用： 你正在开发一套复杂的系统，包含多个应用（Web、Admin、App）且它们共享大量的业务逻辑或 UI 组件。
+    .不该用： 你的多个项目之间完全没有关联，或者团队规模极小且不需要共享代码。
+
+你想了解如何从零开始搭建一个简单的 Monorepo 环境吗？

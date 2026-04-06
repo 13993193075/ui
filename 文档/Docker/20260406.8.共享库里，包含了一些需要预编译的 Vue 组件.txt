@@ -1,0 +1,78 @@
+我现在的共享库（Shared Packages）里，包含了一些需要预编译的 Vue 组件
+
+处理包含 需要预编译的 Vue 组件 的共享库时，Monorepo 的 Docker 构建会稍微复杂一点。
+因为你的 apps/vue-app 或 apps/node-server（如果是服务端渲染）在构建时，
+必须先确保 packages/shared-ui 已经变成了浏览器或 Node 能识别的 JS 文件。
+
+在 pnpm 环境下，最稳妥的策略是：先全局构建（Build Everything），再进行提取部署（Deploy）。
+
+1. 优化后的 Dockerfile 方案
+这个方案采用了“全量安装 -> 全量构建 -> 定向提取”的模式，确保 Vue 组件的依赖和编译产物都能正确关联。
+Dockerfile
+    # --- 阶段 1: 基础环境 ---
+    FROM node:20-slim AS base
+    ENV PNPM_HOME="/pnpm"
+    ENV PATH="$PNPM_HOME:$PATH"
+    RUN corepack enable
+
+    # --- 阶段 2: 全局构建 ---
+    FROM base AS builder
+    WORKDIR /usr/src/app
+    COPY . .
+
+    # 1. 安装所有依赖（包含共享库的构建工具，如 Vite, Volar 等）
+    RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+    # 2. 全局执行 build
+    # 这会根据依赖拓扑结构，先编译 shared-ui，再编译引用它的 apps
+    # 建议在根目录 package.json 配置一个类似 "build": "turbo build" 或 "pnpm -r build" 的脚本
+    RUN pnpm build
+
+    # --- 阶段 3: 定向提取 (以 Node 服务为例) ---
+    # 使用 deploy 命令提取已经 build 好的成品
+    RUN pnpm --filter=node-server --prod deploy /out-server
+
+    # --- 阶段 4: 最终运行镜像 ---
+    FROM base AS runtime
+    WORKDIR /app
+    # 只拷贝部署后的隔离文件夹
+    COPY --from=builder /out-server .
+
+    EXPOSE 3000
+    CMD [ "node", "dist/index.js" ]
+
+2. 关键点：为什么一定要先执行 pnpm build？
+    1. 类型支持与模板编译：Vue 组件（.vue 文件）如果不经过预编译，直接被其他项目引用，
+    可能会导致目标项目在 Docker 构建时因为缺少 Vue 编译器或 TS 类型定义而报错。
+
+    2. 依赖图谱：在 Monorepo 中，pnpm 能够识别项目间的依赖顺序。先在根目录执行构建，
+    可以确保 shared-ui 的 dist 目录在 apps 开始构建前就已经存在。
+
+    3. 如果是 Vue 3 前端项目（Nginx 托管）
+    如果你的目标是发布那个 Vue 3 前端项目，最后的 runtime 阶段应改为 Nginx：
+    Dockerfile
+        # ... 接上面的 builder 阶段 ...
+
+        # --- 阶段 4: Nginx 运行前端 ---
+        FROM nginx:stable-alpine
+        # 直接从 builder 阶段拷贝已经 build 好的 vue-app 产物
+        # 路径通常是 apps/vue-app/dist
+        COPY --from=builder /usr/src/app/apps/vue-app/dist /usr/share/nginx/html
+        COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+        EXPOSE 80
+        CMD ["nginx", "-g", "daemon off;"]
+
+    4. 几个实战建议
+        . 使用 Turborepo 加速：强烈建议在根目录引入 turbo。在 Docker 构建时，
+        turbo build 会自动跳过没有改动的模块，极大缩短镜像构建时间。
+
+        . 别忘了处理 tsconfig：确保你的共享库在编译时，
+        其 package.json 中的 main 或 exports 字段指向的是编译后的 dist/index.js，
+        而不是原始的 .vue 或 .ts 文件。
+
+        . Docker 缓存优化：如果你的共享库更新频率极高，可以将 COPY . . 拆分为多步，
+        先 COPY 那些不常变动的配置文件，再 COPY 源代码，以最大化利用 Layer Cache。
+
+你目前在本地执行 pnpm build 的时候，共享库的产物是输出到每个 package 下的 dist 文件夹吗？
+如果是的话，上面的配置就能直接起作用。

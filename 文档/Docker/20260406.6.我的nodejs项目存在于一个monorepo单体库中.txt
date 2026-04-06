@@ -1,0 +1,100 @@
+我的nodejs项目存在于一个monorepo单体库中，库中会有多个互相独立的前端和后端项目，
+而它们也会依赖库中的一些公共组件库和函数库。这种情况下该如何使用Docker呢
+
+处理 Monorepo（单体仓库）的 Docker 化时，最核心的挑战在于：如何既能让容器访问到宿主仓库中的公共库（Shared Packages），
+又不至于让镜像体积臃肿，并保持构建缓存的高效利用。
+由于 Node.js 的 node_modules 结构复杂，建议采用以下两种主流方案：
+
+方案一：全局上下文构建（最推荐）
+这是目前处理 Monorepo 最标准的方法。你需要在 仓库根目录 执行 Docker 命令，而不是进入子项目目录。
+    1. 项目结构假设
+    Plaintext
+        my-monorepo/
+        ├── packages/
+        │   ├── shared-ui/    # 公共组件
+        │   └── shared-utils/ # 公共工具
+        ├── apps/
+        │   ├── node-server/  # 你的 Node.js 项目
+        │   └── vue-app/      # 你的 Vue 3 项目
+        ├── package.json      # 根目录的 workspace 配置
+        └── Dockerfile        # 放在根目录，或者在根目录调用它
+
+    2. 编写 Dockerfile（以 node-server 为例）
+    在根目录运行构建，这样 Docker 才能“看到” packages/ 里的东西。
+    Dockerfile
+        # 使用多阶段构建
+        FROM node:20-slim AS builder
+
+        WORKDIR /app
+
+        # 1. 复制根目录的 workspace 配置文件
+        COPY package.json pnpm-lock.yaml* yarn.lock* ./
+
+        # 2. 复制所有项目的 package.json 以利用缓存
+        # 如果你使用 pnpm，这一步通常配合 pnpm fetch 使用
+        COPY apps/node-server/package.json ./apps/node-server/
+        COPY packages/shared-utils/package.json ./packages/shared-utils/
+
+        # 3. 安装依赖（Monorepo 模式会安装所有依赖或链接本地库）
+        RUN npm install
+
+        # 4. 复制源代码
+        COPY packages/shared-utils ./packages/shared-utils
+        COPY apps/node-server ./apps/node-server
+
+        # 5. 构建（如果需要编译 TS）
+        RUN npm run build --workspace=node-server
+
+        # --- 运行阶段 ---
+        FROM node:20-slim
+        WORKDIR /app
+        COPY --from=builder /app/apps/node-server/dist ./dist
+        COPY --from=builder /app/node_modules ./node_modules
+        # 注意：还需要把共享库的产物拷过来，或者保持 node_modules 的链接关系
+
+        CMD ["node", "dist/index.js"]
+
+方案二：使用 Turbo 或 PNPM Deploy（更高效）
+如果你使用 pnpm，它有一个极其强大的功能叫做 pnpm deploy。
+它可以将一个 workspace 及其所有依赖（包括本地共享库）提取到一个独立的隔离文件夹中。
+    1. 修改 Dockerfile 流程
+    Dockerfile
+        FROM node:20-slim AS base
+        ENV PNPM_HOME="/pnpm"
+        ENV PATH="$PNPM_HOME:$PATH"
+        RUN corepack enable
+
+        FROM base AS build
+        COPY . /usr/src/app
+        WORKDIR /usr/src/app
+        RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+        # 关键：使用 pnpm deploy 提取 node-server
+        # 这会自动把本地依赖的 shared-utils 打包进去
+        RUN pnpm --filter=node-server deploy /filtered-app
+
+        FROM base AS runtime
+        WORKDIR /app
+        COPY --from=build /filtered-app .
+
+        EXPOSE 3000
+        CMD [ "node", "index.js" ]
+
+核心避坑指南
+    1. 构建上下文 (Context)
+    千万不要在 apps/node-server 目录下执行 docker build。因为 Docker 默认无法访问父级目录（../packages），你会报错找不到共享库。
+        . 正确做法：在根目录运行 docker build -f apps/node-server/Dockerfile .
+
+    2. 依赖“幽灵化”
+    在 Monorepo 中，子项目的 node_modules 往往只是软链接。如果你只是简单地 COPY apps/node-server，
+    你会发现容器里缺失了 packages/shared-utils 的代码。
+        . 对策：必须在 Dockerfile 中显式地 COPY 那些被依赖的公共包。
+
+    3. 构建工具链
+        . 如果你追求速度，强烈建议引入 Turbo (Turborepo)。
+        它可以智能分析依赖图谱，只在共享库发生变化时才重新构建相关的 Docker 镜像。
+
+        . 对于 Vue3 项目，如果是 Monorepo，Nginx 的配置（处理 404 的那个）依然适用，
+        只是构建阶段需要从仓库根目录去获取公共组件代码。
+
+你目前使用的是哪种包管理工具（npm, yarn, 还是 pnpm）？针对 pnpm 的 Monorepo 优化空间是最大的。

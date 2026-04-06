@@ -2,6 +2,7 @@
 
 为了让你的 OpenClaw 机器人团队（特别是 Dev-Bot）能够直接开始编写代码，我们需要定义一个具有“跨行业特征”的标准化接口。
 这个 API 的核心在于：它不再是单一行业的“订房”或“挂号”，而是一个**“医旅融合康复订单 (Medical-Stay Unified Order)”**。
+
 1. 跨行业关联 API 设计思路
 我们将这个接口定义为 POST /unified-orders/rehab。它会同时触达三个子系统：
     1. 医院 (Hospital): 校验出院状态与康复建议。
