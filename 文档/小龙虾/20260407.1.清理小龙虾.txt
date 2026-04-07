@@ -1,0 +1,505 @@
+JSON
+    {
+      "meta": {
+        "lastTouchedVersion": "2026.3.13",
+        "lastTouchedAt": "2026-03-25T10:16:06.882Z"
+      },
+      "wizard": {
+        "lastRunAt": "2026-03-25T09:41:03.358Z",
+        "lastRunVersion": "2026.3.13",
+        "lastRunCommand": "doctor",
+        "lastRunMode": "local"
+      },
+      "browser": {
+        "relayBindHost": "0.0.0.0"
+      },
+      "models": {
+        "providers": {
+          "deepseek": {
+            "baseUrl": "https://api.deepseek.com/v1",
+            "apiKey": "",
+            "auth": "api-key",
+            "api": "openai-completions",
+            "authHeader": false,
+            "models": [
+              {
+                "id": "deepseek-chat",
+                "name": "DeepSeek V3",
+                "cost": {
+                  "input": 0.1,
+                  "output": 0.2
+                }
+              },
+              {
+                "id": "deepseek-reasoner",
+                "name": "DeepSeek R1",
+                "cost": {
+                  "input": 0.55,
+                  "output": 2.19
+                }
+              }
+            ]
+          }
+        }
+      },
+      "agents": {
+        "defaults": {
+          "model": {
+            "primary": "deepseek/deepseek-chat"
+          }
+        },
+        "list": [
+          {
+            "id": "product_strategist",
+            "workspace": "/home/node/.openclaw/workspace/product_strategist",
+            "model": "deepseek/deepseek-reasoner",
+            "identity": {
+              "name": "红袖",
+              "theme": "multidisciplinary innovation lab",
+              "emoji": "👩‍💼"
+            },
+            "groupChat": {
+              "mentionPatterns": [
+                "product_strategist",
+                "@red"
+              ]
+            }
+          },
+          {
+            "id": "systems_architect",
+            "workspace": "/home/node/.openclaw/workspace/systems_architect",
+            "model": "deepseek/deepseek-chat",
+            "identity": {
+              "name": "三疯",
+              "theme": "multidisciplinary innovation lab",
+              "emoji": "💻"
+            },
+            "groupChat": {
+              "mentionPatterns": [
+                "@systems_architect",
+                "@3f"
+              ]
+            }
+          },
+          {
+            "id": "ui_craftsman",
+            "workspace": "/home/node/.openclaw/workspace/ui_craftsman",
+            "model": "deepseek/deepseek-chat",
+            "identity": {
+              "name": "小二",
+              "theme": "multidisciplinary innovation lab",
+              "emoji": "🎨"
+            },
+            "groupChat": {
+              "mentionPatterns": [
+                "@ui_craftsman",
+                "@x2"
+              ]
+            }
+          },
+          {
+            "id": "stock_market_analyst",
+            "workspace": "/home/node/.openclaw/workspace/stock_market_analyst",
+            "model": "deepseek/deepseek-reasoner",
+            "heartbeat": {
+              "every": "15m",
+              "target": "slack",
+              "to": "C0ANU5UAGG0"
+            },
+            "identity": {
+              "name": "Aria",
+              "theme": "multidisciplinary innovation lab",
+              "emoji": "📈"
+            },
+            "groupChat": {
+              "mentionPatterns": [
+                "@stock_market_analyst",
+                "@Aria",
+                "Aria"
+              ]
+            }
+          }
+        ]
+      },
+      "tools": {
+        "web": {
+          "search": {
+            "enabled": true,
+            "provider": "brave",
+            "apiKey": "",
+            "maxResults": 5,
+            "timeoutSeconds": 30
+          }
+        }
+      },
+      "bindings": [
+        {
+          "agentId": "product_strategist",
+          "match": {
+            "channel": "telegram",
+            "accountId": "product_strategist"
+          }
+        },
+        {
+          "agentId": "systems_architect",
+          "match": {
+            "channel": "telegram",
+            "accountId": "systems_architect"
+          }
+        },
+        {
+          "agentId": "ui_craftsman",
+          "match": {
+            "channel": "telegram",
+            "accountId": "ui_craftsman"
+          }
+        },
+        {
+          "agentId": "stock_market_analyst",
+          "match": {
+            "channel": "telegram",
+            "accountId": "stock_market"
+          }
+        }
+      ],
+      "commands": {
+        "native": "auto",
+        "nativeSkills": "auto",
+        "restart": true,
+        "ownerDisplay": "raw"
+      },
+      "session": {
+        "scope": "per-sender",
+        "resetTriggers": [
+          "/new",
+          "/reset"
+        ],
+        "reset": {
+          "mode": "daily",
+          "atHour": 5,
+          "idleMinutes": 60
+        }
+      },
+      "channels": {
+        "telegram": {
+          "enabled": true,
+          "dmPolicy": "pairing",
+          "groupPolicy": "open",
+          "streaming": "partial",
+          "accounts": {
+            "product_strategist": {
+              "dmPolicy": "pairing",
+              "botToken": "",
+              "groups": {
+                "*": {
+                  "requireMention": true
+                }
+              },
+              "allowFrom": [
+                "tg:8675197695"
+              ],
+              "groupPolicy": "open",
+              "streaming": "partial"
+            },
+            "systems_architect": {
+              "dmPolicy": "pairing",
+              "botToken": "",
+              "groups": {
+                "*": {
+                  "requireMention": true
+                }
+              },
+              "allowFrom": [
+                "tg:8675197695"
+              ],
+              "groupPolicy": "open",
+              "streaming": "partial"
+            },
+            "ui_craftsman": {
+              "dmPolicy": "pairing",
+              "botToken": "",
+              "groups": {
+                "*": {
+                  "requireMention": true
+                }
+              },
+              "allowFrom": [
+                "tg:8675197695"
+              ],
+              "groupPolicy": "open",
+              "streaming": "partial"
+            },
+            "stock_market": {
+              "dmPolicy": "pairing",
+              "botToken": "",
+              "groups": {
+                "*": {
+                  "requireMention": true
+                }
+              },
+              "allowFrom": [
+                "tg:5780063309"
+              ],
+              "groupPolicy": "open",
+              "streaming": "partial"
+            },
+            "default": {
+              "dmPolicy": "pairing",
+              "groupPolicy": "open",
+              "streaming": "partial"
+            }
+          }
+        },
+        "slack": {
+          "mode": "socket",
+          "webhookPath": "/slack/events",
+          "capabilities": {
+            "interactiveReplies": true
+          },
+          "enabled": true,
+          "botToken": "",
+          "appToken": "",
+          "userTokenReadOnly": false,
+          "groupPolicy": "open",
+          "streaming": "partial",
+          "nativeStreaming": true,
+          "channels": {
+            "C0AMMGE23B5": {
+              "allow": true,
+              "requireMention": true
+            },
+            "C0ANU5UAGG0": {
+              "allow": true,
+              "requireMention": false
+            }
+          }
+        }
+      },
+      "gateway": {
+        "port": 18789,
+        "mode": "local",
+        "controlUi": {
+          "allowedOrigins": [
+            "http://localhost:18789",
+            "http://127.0.0.1:18789"
+          ]
+        },
+        "auth": {
+          "mode": "token",
+          "token": ""
+        }
+      }
+    }
+
+我给你上传的“openclaw.json”是我的“小龙虾”配置文件，其中有三个机器人“红袖”、“三疯”、“小二”，
+我打算删除它们并清理掉它们存在过的所有“痕迹”，该如何做？
+
+清理“小龙虾”（OpenClaw）配置文件中的这三个机器人，不仅需要修改 openclaw.json，
+还需要清理系统中的物理工作目录。
+
+以下是彻底删除“红袖”（product_strategist）、“三疯”（systems_architect）
+和“小二”（ui_craftsman）所有痕迹的完整步骤：
+
+第一步：清理 openclaw.json 配置文件
+    你需要从 JSON 文件中删除与这三个机器人相关的三个主要部分：
+    agents.list（代理定义）、bindings（绑定关系）和 channels.telegram.accounts（电报账号配置）。
+
+    为了方便你直接使用，我为你生成了清理后的完整 openclaw.json。你可以直接复制并覆盖原文件内容：
+    JSON
+        {
+          "meta": {
+            "lastTouchedVersion": "2026.3.13",
+            "lastTouchedAt": "2026-03-25T10:16:06.882Z"
+          },
+          "wizard": {
+            "lastRunAt": "2026-03-25T09:41:03.358Z",
+            "lastRunVersion": "2026.3.13",
+            "lastRunCommand": "doctor",
+            "lastRunMode": "local"
+          },
+          "browser": {
+            "relayBindHost": "0.0.0.0"
+          },
+          "models": {
+            "providers": {
+              "deepseek": {
+                "baseUrl": "https://api.deepseek.com/v1",
+                "apiKey": "",
+                "auth": "api-key",
+                "api": "openai-completions",
+                "authHeader": false,
+                "models": [
+                  {
+                    "id": "deepseek-chat",
+                    "name": "DeepSeek V3",
+                    "cost": {
+                      "input": 0.1,
+                      "output": 0.2
+                    }
+                  },
+                  {
+                    "id": "deepseek-reasoner",
+                    "name": "DeepSeek R1",
+                    "cost": {
+                      "input": 0.55,
+                      "output": 2.19
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "agents": {
+            "defaults": {
+              "model": {
+                "primary": "deepseek/deepseek-chat"
+              }
+            },
+            "list": [
+              {
+                "id": "stock_market_analyst",
+                "workspace": "/home/node/.openclaw/workspace/stock_market_analyst",
+                "model": "deepseek/deepseek-reasoner",
+                "heartbeat": {
+                  "every": "15m",
+                  "target": "slack",
+                  "to": "C0ANU5UAGG0"
+                },
+                "identity": {
+                  "name": "Aria",
+                  "theme": "multidisciplinary innovation lab",
+                  "emoji": "📈"
+                },
+                "groupChat": {
+                  "mentionPatterns": [
+                    "@stock_market_analyst",
+                    "@Aria",
+                    "Aria"
+                  ]
+                }
+              }
+            ]
+          },
+          "tools": {
+            "web": {
+              "search": {
+                "enabled": true,
+                "provider": "brave",
+                "apiKey": "",
+                "maxResults": 5,
+                "timeoutSeconds": 30
+              }
+            }
+          },
+          "bindings": [
+            {
+              "agentId": "stock_market_analyst",
+              "match": {
+                "channel": "telegram",
+                "accountId": "stock_market"
+              }
+            }
+          ],
+          "commands": {
+            "native": "auto",
+            "nativeSkills": "auto",
+            "restart": true,
+            "ownerDisplay": "raw"
+          },
+          "session": {
+            "scope": "per-sender",
+            "resetTriggers": [
+              "/new",
+              "/reset"
+            ],
+            "reset": {
+              "mode": "daily",
+              "atHour": 5,
+              "idleMinutes": 60
+            }
+          },
+          "channels": {
+            "telegram": {
+              "enabled": true,
+              "dmPolicy": "pairing",
+              "groupPolicy": "open",
+              "streaming": "partial",
+              "accounts": {
+                "stock_market": {
+                  "dmPolicy": "pairing",
+                  "botToken": "",
+                  "groups": {
+                    "*": {
+                      "requireMention": true
+                    }
+                  },
+                  "allowFrom": [
+                    "tg:5780063309"
+                  ],
+                  "groupPolicy": "open",
+                  "streaming": "partial"
+                },
+                "default": {
+                  "dmPolicy": "pairing",
+                  "groupPolicy": "open",
+                  "streaming": "partial"
+                }
+              }
+            },
+            "slack": {
+              "mode": "socket",
+              "webhookPath": "/slack/events",
+              "capabilities": {
+                "interactiveReplies": true
+              },
+              "enabled": true,
+              "botToken": "",
+              "appToken": "",
+              "userTokenReadOnly": false,
+              "groupPolicy": "open",
+              "streaming": "partial",
+              "nativeStreaming": true,
+              "channels": {
+                "C0AMMGE23B5": {
+                  "allow": true,
+                  "requireMention": true
+                },
+                "C0ANU5UAGG0": {
+                  "allow": true,
+                  "requireMention": false
+                }
+              }
+            }
+          },
+          "gateway": {
+            "port": 18789,
+            "mode": "local",
+            "controlUi": {
+              "allowedOrigins": [
+                "http://localhost:18789",
+                "http://127.0.0.1:18789"
+              ]
+            },
+            "auth": {
+              "mode": "token",
+              "token": ""
+            }
+          }
+        }
+
+第二步：清理工作目录残留（物理痕迹）
+    根据你的配置文件，这三个机器人在系统中都留有独立的工作空间文件夹。你需要登录到运行 OpenClaw 的服务器或本地机器，
+    删除以下三个目录及其内部的所有文件（日志、记忆、临时文件等）：
+        1. /home/node/.openclaw/workspace/product_strategist
+        2. /home/node/.openclaw/workspace/systems_architect
+        3. /home/node/.openclaw/workspace/ui_craftsman
+
+    如果你使用的是 Linux 终端，可以执行以下命令：
+    Bash
+        rm -rf /home/node/.openclaw/workspace/product_strategist
+        rm -rf /home/node/.openclaw/workspace/systems_architect
+        rm -rf /home/node/.openclaw/workspace/ui_craftsman
+
+第三步：重启服务
+    完成配置文件的替换和文件夹的删除后，重启 OpenClaw 服务，让所有的更改生效，
+    这样这三个机器人就彻底被抹除干净了，只留下你需要的股票分析机器人 Aria。

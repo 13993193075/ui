@@ -1,0 +1,28 @@
+如何创建一个新的“机器人”
+
+在 OpenClaw 中创建一个新的机器人，本质上就是向 openclaw.json 配置文件中声明它的
+身份（Agent）、绑定关系（Binding）以及通讯渠道凭证（Channel Account）。
+
+为了直观，这里以创建一个专门协助开发像素风放置类农场游戏的机器人为例，我们将它命名为 game_designer。
+以下是完整的创建步骤：
+
+1. 注册机器人账号获取 Token
+如果你打算将它接入 Telegram，需要先去 Telegram 找  申请一个新的 Bot，并获取到对应的 botToken。
+
+2. 修改 openclaw.json
+你需要用文本编辑器打开 openclaw.json，在对应的三个 JSON 数组/对象中追加新机器人的配置：
+    第一处：在 agents.list 数组中添加机器人的核心定义
+        这里定义了机器人的工作目录、使用的模型（例如使用深度思考模型）以及它的身份设定。
+    第二处：在 channels.telegram.accounts 中添加通讯凭证
+        这里配置机器人的 Token、权限和交互策略（注意替换成你真实获取到的 Token，
+        并确保 allowFrom 中的 Telegram ID 是你的）。
+    第三处：在 bindings 数组中建立映射
+        将第一处的 Agent ID 和第二处的 Account ID 绑定在一起。
+
+3. 创建物理工作目录（可选）
+虽然大部分情况下系统会自动创建，但为了权限安全，你可以提前在宿主机的映射目录（
+即对应的 /home/node/.openclaw/workspace/game_designer）中建好这个空文件夹。
+
+4. 重启 Docker 服务
+配置保存后，打开终端进入你的 docker-compose.yml 所在目录，执行硬重启让配置生效：
+启动完成后，你的新机器人就可以在 Telegram 里开始接受指令并协助你工作了。

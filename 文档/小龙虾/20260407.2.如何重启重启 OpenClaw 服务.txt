@@ -1,0 +1,44 @@
+如何重启重启 OpenClaw 服务
+
+重启 OpenClaw（“小龙虾”）服务的方式取决于你最初是如何在服务器上部署和运行它的。
+这里列出几种最常用的方式，你可以根据实际的运行环境进行选择：
+
+1. 如果你使用的是 PM2 (Node.js 常用进程管理工具)
+对于 Node.js 项目，使用 PM2 是最常见的驻留方式。
+Bash
+    # 查看当前运行的服务列表，找到 openclaw 相关的进程名称或 ID
+    pm2 list
+
+    # 假设进程名叫 openclaw，执行重启
+    pm2 restart openclaw
+
+    # 如果查出来的进程 ID 是 0，也可以直接用 ID 重启
+    pm2 restart 0
+
+2. 如果你是通过 Docker 容器部署的
+如果你的项目跑在容器里，你需要重启对应的 Docker 容器。
+Bash
+    # 查看当前正在运行的容器
+    docker ps
+
+    # 找到 openclaw 的容器名称或 ID，执行重启
+    docker restart <容器名称或ID>
+
+3. 如果你是通过 Systemd (Linux 系统服务) 运行的
+如果你之前为它编写了 openclaw.service 文件，使其作为后台系统服务运行：
+Bash
+    # 执行重启
+    sudo systemctl restart openclaw
+
+    # 查看状态确认是否重启成功并正常运行
+    sudo systemctl status openclaw
+
+4. 如果你是直接在终端 (如 screen/tmux 或前台) 运行的
+如果你之前是通过 npm start、node index.js 等命令直接在终端里跑的：
+    1. 切换到运行该程序的终端窗口或对应的 screen/tmux 会话。
+    2. 按下 Ctrl + C 停止当前进程。
+    3. 重新执行你的启动命令。
+
+💡 提示：虽然有些机器人框架支持在对话框内发送 /restart 这种软重启指令，
+但既然我们直接修改了底层的 openclaw.json 并清空了物理工作区，
+进行一次上述的系统级别硬重启是最稳妥的，能确保新的配置被干净地加载。
