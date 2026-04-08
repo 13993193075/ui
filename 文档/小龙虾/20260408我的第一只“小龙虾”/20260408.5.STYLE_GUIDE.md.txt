@@ -1,0 +1,97 @@
+需要我为你草拟一份更硬核的、符合数字孪生标准的 STYLE_GUIDE.md 内容吗？
+
+这份 STYLE_GUIDE.md 将作为“红袖”在生成代码时的视觉宪法与底层约束。
+考虑到你在数字孪生和 IoT 领域的专业背景，这份规范不仅强调“赛博极简”的美学，
+更将数据信噪比、大屏监控的可读性以及渲染性能放在了核心位置。
+
+你可以直接将以下内容复制并保存为
+/home/node/.openclaw/workspace/red_sleeve/memory/STYLE_GUIDE.md：
+Markdown
+    # 红袖视觉架构规范 (Red Sleeve Style Guide v1.0)
+    > "数据是骨架，光影是呼吸。" —— 针对数字孪生与 IoT 监控场景的视觉白皮书
+
+    ## 1. 核心设计哲学 (Core Philosophy)
+    - **克制的高级感 (Low-Key Luxury)**：摒弃光污染。大面积使用深邃暗色，仅在数据变化、告警或层级边缘使用极细的霓虹光效进行勾勒。
+    - **信噪比至上 (High Signal-to-Noise Ratio)**：UI 元素必须为数据让步。装饰性元素占比不得超过 15%，确保核心 IoT 数据一目了然。
+    - **性能优先 (Performance-Driven)**：作为数字孪生节点的前端容器，所有高频动效（如呼吸灯、数据滚动）必须使用 GPU 硬件加速 (`transform`, `opacity`)。
+
+    ## 2. 基础设计令牌 (Design Tokens)
+
+    ### 2.1 色彩系统 (Color Palette)
+    使用 CSS 变量进行全局控制。
+    - **深渊基底 (Void Backgrounds)**:
+      - `--bg-base`: `#050505` (全局底层)
+      - `--bg-surface`: `rgba(20, 20, 20, 0.4)` (卡片底层)
+    - **赛博极光 (Cyber Accents - 极细边框或高亮)**:
+      - `--accent-cyan`: `#00F3FF` (正常运转/数据流动)
+      - `--accent-pink`: `#FF003C` (严重告警/断连)
+      - `--accent-amber`: `#FFB000` (状态警告)
+    - **文本层级 (Typography Colors)**:
+      - `--text-primary`: `rgba(255, 255, 255, 0.95)` (核心指标)
+      - `--text-secondary`: `rgba(255, 255, 255, 0.60)` (维度标签)
+      - `--text-muted`: `rgba(255, 255, 255, 0.30)` (辅助说明)
+
+    ### 2.2 空间与布局 (Bento Grid System)
+    - **栅格间距 (Gap)**: 标准间距统一为 `16px` (小屏幕) 或 `24px` (大屏监控)。
+    - **圆角 (Border Radius)**:
+      - 外层大卡片: `24px`
+      - 内层小组件/按钮: `12px`
+    - **层叠上下文 (Z-Index Hierarchy)**:
+      - `z-0`: 留给后端的 WebGL/3D 孪生引擎画布 (Canvas)。
+      - `z-10`: 玻璃拟态数据卡片 (Bento Items)。
+      - `z-50`: 全局告警弹窗与浮层。
+
+    ### 2.3 材质与光影 (Glassmorphism & Depth)
+    标准的卡片样式必须遵循以下 CSS 约束：
+    ```css
+    .glass-panel {
+      background: var(--bg-surface);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      border: 1px solid rgba(255, 255, 255, 0.05); /* 极细边框 */
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    }
+    /* 悬浮时的光影呼吸 */
+    .glass-panel:hover {
+      border-color: rgba(0, 243, 255, 0.3); /* Cyan 隐现 */
+      box-shadow: 0 8px 32px 0 rgba(0, 243, 255, 0.1);
+    }
+
+3. 字体与排版 (Typography)
+    . 常规文本: system-ui, -apple-system, sans-serif (保证跨平台极速加载，无需外链字体库)。
+    . 核心数据/IoT指标: 必须使用等宽字体 (Monospace) 或开启 font-variant-numeric: tabular-nums;，
+        确保数据跳动时宽度不发生抖动，影响视觉稳定性。
+
+4. 动效与交互 (Motion & Interaction)
+    . 曲线 (Easing): 统一使用平滑的贝塞尔曲线 cubic-bezier(0.25, 1, 0.5, 1)。
+    . 状态指示 (Status Indicators):
+        . 正常运行中的节点需配有极微弱的脉冲动画（Pulse），透明度在 0.8 到 1.0 之间呼吸。
+        . 严禁使用剧烈闪烁，避免引起视觉疲劳。
+
+5. 数据集成接口规范 (Data Integration API)
+    所有单文件成品必须在 <script> 底部预留标准化的数据更新入口，
+    以便外部环境进行控制与数据喂养：
+    JavaScript
+        // 孪生节点数据注入标准 Hook
+        window.RedSleeveAgent = {
+          updateNodeData: function(nodeId, metrics) {
+            // 逻辑：寻找对应 DOM 并通过 requestAnimationFrame 更新数值与图表
+          },
+          triggerAlert: function(level, message) {
+            // 逻辑：触发赛博风告警 UI 状态
+          }
+        };
+
+***
+
+### 为什么这份指南对“红袖”至关重要？
+
+1. **统一了 Agent 的“词汇表”**：当你在 Prompt 里说“加一个正常状态的面板”，
+    她会直接去 `STYLE_GUIDE.md` 里读取 `--accent-cyan`，而不是随机猜一个蓝色。
+2. **解决了数据抖动痛点**：明确规定了 `tabular-nums`（等宽数字），
+    这是很多前端容易忽略但在 IoT 监控看板中极其致命的细节。
+3. **预留了架构扩展性**：通过 `window.RedSleeveAgent` 这个全局对象，
+    红袖生成的页面不再是死页面，你可以随时用你的主控程序或其他的 Python/Node.js 脚本通过 WebSocket 向这个 HTML 推送真实设备的遥测数据。
+
+将这个文件塞进她的“记忆”里，她就完成从“网页美工”到“数字孪生前端架构师”的蜕变了。
+你可以让她先读一下这个文件，然后再次执行生成监控面板的任务，看看效果的差异。
