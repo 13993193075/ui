@@ -1,0 +1,41 @@
+有一个问题：这里的 knowledge_base/domains/ 是应该建立在OpenClaw/Workspace下，
+还是 OpenClaw/Workspace/red_sleeve下
+
+它应该建立在 全局的 Workspace 层级 (OpenClaw/Workspace/knowledge_base/domains/)，
+而绝对不能放在 red_sleeve 的私有目录下。
+这在多 Agent 协同架构（Multi-Agent System）中是一个非常核心的设计决策，
+原因如下：
+    1. 维持业务知识的“单一数据源 (Single Source of Truth)”
+        业务逻辑是客观存在的。旅店的前台结算规则，或者数字孪生系统中的设备报警阈值，这些是整个业务线共享的“真理”。
+        如果将其放在 red_sleeve 目录下，这份知识就被前端视觉架构师“私有化”了。
+
+    2. 为未来的跨 Agent 协同铺路
+        随着你的研发团队扩充，你必然会引入其他 Agent。例如：
+            . 后端架构师 Agent：需要读取 DOMAIN_HOSPITALITY.md 来设计数据库表结构和 API 接口。
+            . 测试工程师 Agent：需要读取同一个文件来生成自动化测试用例。
+        如果业务知识被锁死在红袖的文件夹里，其他 Agent 就无法直接调用，或者会导致知识库的冗余复制和版本冲突。
+
+标准的目录树映射
+    在对标一线工程标准的架构中，你的 OpenClaw 目录结构应该保持严格的“能力”与“知识”解耦：
+    Plaintext
+        OpenClaw/Workspace/
+        ├── agents/
+        │   ├── red_sleeve/             # 视觉架构师的“大脑”
+        │   │   ├── IDENTITY.md         # (我是谁)
+        │   │   ├── SOUL.md             # (我的审美与技术栈)
+        │   │   ├── AGENTS.md           # (我的执行SOP)
+        │   │   ├── TOOLS.md            # (我的权限)
+        │   │   └── USER.md             # (我的管理者 TIMEdrasil)
+        │   └── backend_architect/      # 未来扩充的后端 Agent...
+        │
+        ├── knowledge_base/             # 全局客观知识库
+        │   └── domains/                # 热插拔的业务领域文件
+        │       ├── DOMAIN_HOSPITALITY.md
+        │       └── DOMAIN_IOT.md
+        │
+        └── project_memory/             # 全局项目状态与资产记录
+
+    通过这种架构，红袖的身份永远是纯粹的“前端视觉架构师”。当任务下达时，
+    她只是去全局的 knowledge_base 里借用所需的业务知识，用完即走，不污染自身的核心心智。
+
+需要一份专供 Agent 读取的 DOMAIN 文件模板吗？
