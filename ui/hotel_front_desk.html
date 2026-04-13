@@ -457,15 +457,18 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 5, 0.85);
+            background: rgba(5, 5, 5, 0.78);
             backdrop-filter: blur(8px);
             z-index: 1000;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s, visibility 0.4s;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 40px 20px;
         }
         .modal-overlay.active {
             opacity: 1;
@@ -483,6 +486,7 @@
             transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             position: relative;
             overflow: hidden;
+            margin: 20px auto;
         }
         .modal-overlay.active .modal-content {
             transform: scale(1) rotateX(0deg);
@@ -518,11 +522,203 @@
             outline: none;
             border-color: var(--accent-cyan);
         }
+        /* 占位符统一样式 */
+        .form-input::placeholder,
+        .datetime-input::placeholder,
+        .cyber-number::placeholder {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        /* 赛博风格下拉框 */
+        .cyber-select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            padding-right: 48px;
+            font-size: 1rem;
+            transition: border 0.3s, box-shadow 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300F3FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 18px;
+            border-radius: 0;
+            cursor: pointer;
+        }
+        .cyber-select:hover {
+            border-color: rgba(0, 243, 255, 0.5);
+        }
+        .cyber-select:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+        }
+        /* 赛博风格下拉选项 */
+        .cyber-select option {
+            background: rgba(10, 10, 10, 0.95);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            font-size: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s, color 0.2s;
+        }
+        /* 禁用选项（占位符） */
+        .cyber-select option[disabled] {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        /* 选中状态 */
+        .cyber-select option:checked {
+            background: rgba(0, 243, 255, 0.25);
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+        /* 悬停状态 */
+        .cyber-select option:hover {
+            background: rgba(0, 243, 255, 0.15);
+            color: var(--accent-cyan);
+        }
+        /* 焦点状态（键盘导航） */
+        .cyber-select option:focus {
+            background: rgba(0, 243, 255, 0.2);
+            outline: 1px solid var(--accent-cyan);
+        }
+        /* 赛博风格数字输入框（押金） */
+        .cyber-number {
+            padding-right: 48px; /* 为自定义按钮留出空间 */
+        }
+        /* 隐藏所有浏览器的默认微调按钮 */
+        .cyber-number::-webkit-inner-spin-button,
+        .cyber-number::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .cyber-number {
+            -moz-appearance: textfield;
+        }
+        .cyber-number::-webkit-outer-spin-button,
+        .cyber-number::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
         .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 12px;
             margin-top: 30px;
+        }
+        /* 日期时间选择器 */
+        .datetime-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.73);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .datetime-picker-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .datetime-picker {
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px) saturate(140%);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            border-radius: 0;
+        }
+        .datetime-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .datetime-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        .datetime-weekday {
+            text-align: center;
+            padding: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .datetime-day {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .datetime-day:hover {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--accent-cyan);
+        }
+        .datetime-day.selected {
+            background: var(--accent-cyan);
+            color: var(--bg-base);
+            font-weight: bold;
+        }
+        .datetime-day.other-month {
+            color: var(--text-muted);
+        }
+        .datetime-time {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .datetime-time select {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .datetime-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .datetime-btn {
+            padding: 8px 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 0;
+        }
+        .datetime-confirm {
+            background: var(--accent-cyan);
+            color: var(--bg-base);
+        }
+        .datetime-cancel {
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-primary);
         }
         .btn {
             padding: 10px 24px;
@@ -753,6 +949,85 @@
                 top: 12px;
             }
         }
+        /* 日期时间输入框验证样式 */
+        .datetime-input.invalid {
+            border-color: var(--accent-pink) !important;
+            box-shadow: 0 0 8px rgba(255, 0, 60, 0.3) !important;
+        }
+        .datetime-input.valid {
+            border-color: var(--accent-cyan) !important;
+        }
+        /* 赛博风格提示窗口 */
+        .cyber-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 5, 0.68);
+            backdrop-filter: blur(12px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .cyber-alert-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .cyber-alert {
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px) saturate(140%);
+            border: 1px solid var(--accent-cyan);
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 0;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        }
+        .cyber-alert-overlay.active .cyber-alert {
+            transform: scale(1) translateY(0);
+        }
+        .cyber-alert-title {
+            font-size: 1.4rem;
+            color: var(--accent-cyan);
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+        .cyber-alert-message {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        .cyber-alert-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        .cyber-alert-btn {
+            padding: 10px 24px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 0;
+            min-width: 100px;
+        }
+        .cyber-alert-btn.confirm {
+            background: var(--accent-cyan);
+            color: var(--bg-base);
+        }
+        .cyber-alert-btn.confirm:hover {
+            background: #00D4E6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 243, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -915,6 +1190,51 @@
     <script>
         // 初始化Lucide图标
         lucide.createIcons();
+
+        // ==================== 遮罩层滚动锁定管理器 ====================
+        let overlayStack = 0;
+        let originalBodyOverflow = '';
+        let originalBodyPosition = '';
+        let originalScrollTop = 0;
+        
+        function lockBodyScroll() {
+            if (overlayStack === 0) {
+                // 保存原始状态
+                originalBodyOverflow = document.body.style.overflow;
+                originalBodyPosition = document.body.style.position;
+                originalScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // 锁定body滚动
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${originalScrollTop}px`;
+                document.body.style.width = '100%';
+                document.body.style.height = '100%';
+            }
+            overlayStack++;
+        }
+        
+        function unlockBodyScroll() {
+            overlayStack--;
+            if (overlayStack === 0) {
+                // 恢复原始状态
+                document.body.style.overflow = originalBodyOverflow;
+                document.body.style.position = originalBodyPosition;
+                document.body.style.top = '';
+                document.body.style.width = '';
+                document.body.style.height = '';
+                
+                // 恢复滚动位置
+                if (originalBodyPosition !== 'fixed') {
+                    window.scrollTo(0, originalScrollTop);
+                }
+            } else if (overlayStack < 0) {
+                // 错误恢复，重置计数器
+                overlayStack = 0;
+                console.warn('遮罩层计数器异常，已重置');
+            }
+        }
+        // ==================== 遮罩层滚动锁定管理器结束 ====================
 
         // 时间刻度生成
         function renderTimeRuler() {
@@ -1116,29 +1436,95 @@
             // 根据类型生成表单
             switch(type) {
                 case 'checkin':
-                    title.textContent = `入住登记 - 房间 ${room}`;
+                    title.textContent = `入住登记 - 旅客信息`;
                     form.innerHTML = `
                         <div class="form-group">
-                            <label class="form-label">客人姓名</label>
-                            <input type="text" class="form-input" placeholder="请输入姓名" required>
+                            <label class="form-label">旅客姓名</label>
+                            <input type="text" class="form-input" placeholder="请输入" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">国籍</label>
+                            <select class="form-input cyber-select" required>
+                                <option value="" selected disabled>暂不选择</option>
+                                <option value="CN">中国</option>
+                                <option value="US">美国</option>
+                                <option value="JP">日本</option>
+                                <option value="KR">韩国</option>
+                                <option value="GB">英国</option>
+                                <option value="DE">德国</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">证件种类</label>
+                            <select class="form-input cyber-select" required>
+                                <option value="" selected disabled>暂不选择</option>
+                                <option value="idcard">居民身份证</option>
+                                <option value="passport">护照</option>
+                                <option value="tw">台胞证</option>
+                                <option value="hk">港澳居民来往内地通行证</option>
+                                <option value="driver">驾驶证</option>
+                                <option value="other">其他</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">证件号码</label>
-                            <input type="text" class="form-input" placeholder="身份证/护照号码" required>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" class="form-input" placeholder="请输入" required style="flex: 1;">
+                                <i data-lucide="scan" class="w-5 h-5" onclick="simulateIDScan(this)" style="color: var(--accent-cyan); cursor: pointer; transition: color 0.2s; align-self: center;"></i>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">点击右边图标可以启动证件信息采集设备</p>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">联系电话</label>
-                            <input type="tel" class="form-input" placeholder="手机号码" required>
+                            <label class="form-label">入住房号</label>
+                            <select class="form-input cyber-select" id="roomSelect" required>
+                                <option value="" selected disabled>暂不选择</option>
+                                <option value="101">101 标间</option>
+                                <option value="102">102 大床</option>
+                                <option value="103">103 套间</option>
+                                <option value="201">201 标间</option>
+                                <option value="202">202 大床</option>
+                                <option value="203">203 套间</option>
+                                <option value="301">301 标间</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">入住天数</label>
-                            <input type="number" class="form-input" placeholder="1" min="1" required>
+                            <label class="form-label">开房时间</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" class="form-input datetime-input" required style="flex: 1;" data-format="yyyy/MM/dd HH:mm" placeholder="格式：yyyy/MM/dd HH:mm">
+                                <i data-lucide="calendar" class="w-5 h-5" onclick="openDateTimePicker(this)" style="color: var(--accent-cyan); cursor: pointer; transition: color 0.2s; align-self: center;"></i>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">预付押金</label>
-                            <input type="number" class="form-input" placeholder="500" min="0" required>
+                            <label class="form-label">退房时间</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" class="form-input datetime-input" required style="flex: 1;" data-format="yyyy/MM/dd HH:mm" placeholder="格式：yyyy/MM/dd HH:mm">
+                                <i data-lucide="calendar" class="w-5 h-5" onclick="openDateTimePicker(this)" style="color: var(--accent-cyan); cursor: pointer; transition: color 0.2s; align-self: center;"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">入住押金</label>
+                            <input type="number" class="form-input cyber-number" placeholder="请输入" min="0" step="0.01" required>
                         </div>
                     `;
+                    // 如果传入了房间号，自动选中对应的下拉选项
+                    if (room) {
+                        setTimeout(() => {
+                            const roomSelect = document.getElementById('roomSelect');
+                            if (roomSelect) {
+                                for (let i = 0; i < roomSelect.options.length; i++) {
+                                    if (roomSelect.options[i].value === room.toString()) {
+                                        roomSelect.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                        }, 10);
+                    }
+                    // 初始化Lucide图标（证件扫描按钮）
+                    setTimeout(() => {
+                        lucide.createIcons();
+                    }, 20);
                     break;
                 case 'checkout':
                     title.textContent = `离店结算 - 房间 ${room}`;
@@ -1170,7 +1556,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">维修原因</label>
-                            <select class="form-input">
+                            <select class="form-input cyber-select">
+                                <option value="" selected disabled>暂不选择</option>
                                 <option>设备故障</option>
                                 <option>装修维护</option>
                                 <option>清洁问题</option>
@@ -1200,7 +1587,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">操作</label>
-                            <select class="form-input">
+                            <select class="form-input cyber-select">
+                                <option value="" selected disabled>暂不选择</option>
                                 <option>转为空房</option>
                                 <option>转为脏房</option>
                                 <option>转为已打扫</option>
@@ -1218,6 +1606,7 @@
                     title.textContent = '功能暂未实现';
                     form.innerHTML = `<p>此功能正在开发中...</p>`;
             }
+            lockBodyScroll();
             overlay.classList.add('active');
             // 触发弧形轨迹动画（简化版）
             const modal = document.querySelector('.modal-content');
@@ -1229,11 +1618,265 @@
 
         function closeModal() {
             document.getElementById('modalOverlay').classList.remove('active');
+            unlockBodyScroll();
+        }
+
+        // 赛博风格提示窗口
+        function showCyberAlert(message, title = '提示') {
+            // 如果已有提示窗口，先移除
+            const existing = document.getElementById('cyberAlertOverlay');
+            if (existing) {
+                existing.parentNode.removeChild(existing);
+            }
+            
+            // 创建覆盖层
+            const overlay = document.createElement('div');
+            overlay.className = 'cyber-alert-overlay';
+            overlay.id = 'cyberAlertOverlay';
+            
+            // 创建提示框内容
+            overlay.innerHTML = `
+                <div class="cyber-alert">
+                    <div class="cyber-alert-title">${title}</div>
+                    <div class="cyber-alert-message">${message}</div>
+                    <div class="cyber-alert-actions">
+                        <button class="cyber-alert-btn confirm" onclick="closeCyberAlert()">确定</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            lockBodyScroll();
+            
+            // 触发动画
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+            
+            // 按ESC键关闭
+            const escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    closeCyberAlert();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+            
+            // 点击覆盖层关闭
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeCyberAlert();
+                }
+            });
+        }
+        
+        function closeCyberAlert() {
+            const overlay = document.getElementById('cyberAlertOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                unlockBodyScroll();
+                setTimeout(() => {
+                    if (overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                    }
+                }, 300);
+            }
         }
 
         function submitForm() {
-            alert('表单提交成功（模拟）');
+            showCyberAlert('已模拟表单提交成功', '提示');
             closeModal();
+        }
+
+        // 模拟证件扫描
+        function simulateIDScan(button) {
+            const input = button.parentNode.querySelector('input');
+            if (input) {
+                input.value = '310101202601011234';
+                showCyberAlert('已模拟从证件信息采集设备读取信息', '提示');
+            }
+        }
+
+        // 日期时间选择器
+        let currentDateTimeInput = null;
+        
+        function openDateTimePicker(button) {
+            const input = button.parentNode.querySelector('input');
+            if (!input) return;
+            currentDateTimeInput = input;
+            
+            // 创建日期时间选择器覆盖层
+            const overlay = document.createElement('div');
+            overlay.className = 'datetime-picker-overlay';
+            overlay.id = 'datetimePickerOverlay';
+            
+            // 解析当前输入值（如果有）
+            let currentDate = new Date();
+            let currentHour = currentDate.getHours();
+            let currentMinute = currentDate.getMinutes();
+            
+            if (input.value) {
+                // 尝试解析格式：yyyy/MM/dd HH:mm
+                const match = input.value.match(/^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})$/);
+                if (match) {
+                    const [, year, month, day, hour, minute] = match;
+                    currentDate = new Date(year, month - 1, day);
+                    currentHour = parseInt(hour);
+                    currentMinute = parseInt(minute);
+                }
+            }
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const day = currentDate.getDate();
+            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', 
+                               '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+            
+            // 生成日历
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            let calendarHTML = '';
+            // 星期标题
+            for (let i = 0; i < 7; i++) {
+                calendarHTML += `<div class="datetime-weekday">${dayNames[i]}</div>`;
+            }
+            
+            // 上个月的日期
+            for (let i = 0; i < startingDay; i++) {
+                const prevDate = new Date(year, month, -i);
+                const dayNum = prevDate.getDate();
+                calendarHTML += `<div class="datetime-day other-month">${dayNum}</div>`;
+            }
+            
+            // 当前月的日期
+            for (let i = 1; i <= daysInMonth; i++) {
+                const isSelected = i === day;
+                const className = `datetime-day ${isSelected ? 'selected' : ''}`;
+                calendarHTML += `<div class="${className}" data-day="${i}">${i}</div>`;
+            }
+            
+            // 下个月的日期（补全42个格子）
+            const totalCells = 42;
+            const remainingCells = totalCells - (startingDay + daysInMonth);
+            for (let i = 1; i <= remainingCells; i++) {
+                calendarHTML += `<div class="datetime-day other-month">${i}</div>`;
+            }
+            
+            // 时间选择
+            let hourOptions = '';
+            for (let h = 0; h < 24; h++) {
+                const selected = h === currentHour ? 'selected' : '';
+                hourOptions += `<option value="${h}" ${selected}>${String(h).padStart(2, '0')}时</option>`;
+            }
+            
+            let minuteOptions = '';
+            for (let m = 0; m < 60; m++) {
+                const selected = m === currentMinute ? 'selected' : '';
+                minuteOptions += `<option value="${m}" ${selected}>${String(m).padStart(2, '0')}分</option>`;
+            }
+            
+            overlay.innerHTML = `
+                <div class="datetime-picker">
+                    <div class="datetime-header">
+                        <span>${year}年 ${monthNames[month]}</span>
+                        <button onclick="closeDateTimePicker()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">×</button>
+                    </div>
+                    <div class="datetime-grid">
+                        ${calendarHTML}
+                    </div>
+                    <div class="datetime-time">
+                        <select id="datetimeHour">
+                            ${hourOptions}
+                        </select>
+                        <select id="datetimeMinute">
+                            ${minuteOptions}
+                        </select>
+                    </div>
+                    <div class="datetime-actions">
+                        <button class="datetime-btn datetime-cancel" onclick="closeDateTimePicker()">取消</button>
+                        <button class="datetime-btn datetime-confirm" onclick="confirmDateTime()">确定</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            lockBodyScroll();
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+            
+            // 添加日期点击事件
+            setTimeout(() => {
+                overlay.querySelectorAll('.datetime-day:not(.other-month)').forEach(dayEl => {
+                    dayEl.addEventListener('click', () => {
+                        overlay.querySelectorAll('.datetime-day').forEach(d => d.classList.remove('selected'));
+                        dayEl.classList.add('selected');
+                    });
+                });
+            }, 50);
+        }
+        
+        function closeDateTimePicker() {
+            const overlay = document.getElementById('datetimePickerOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                unlockBodyScroll();
+                setTimeout(() => {
+                    if (overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                    }
+                }, 300);
+            }
+            currentDateTimeInput = null;
+        }
+        
+        function confirmDateTime() {
+            if (!currentDateTimeInput) return;
+            
+            const overlay = document.getElementById('datetimePickerOverlay');
+            if (!overlay) return;
+            
+            // 获取选中的日期
+            const selectedDayEl = overlay.querySelector('.datetime-day.selected:not(.other-month)');
+            if (!selectedDayEl) {
+                showCyberAlert('请选择日期', '提示');
+                return;
+            }
+            
+            const selectedDay = parseInt(selectedDayEl.dataset.day);
+            const hourSelect = overlay.querySelector('#datetimeHour');
+            const minuteSelect = overlay.querySelector('#datetimeMinute');
+            
+            if (!hourSelect || !minuteSelect) return;
+            
+            const hour = parseInt(hourSelect.value);
+            const minute = parseInt(minuteSelect.value);
+            
+            // 获取年份和月份（从标题解析）
+            const headerText = overlay.querySelector('.datetime-header span').textContent;
+            const match = headerText.match(/(\d+)年 (\S+)/);
+            if (!match) return;
+            
+            const year = parseInt(match[1]);
+            const monthName = match[2];
+            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', 
+                               '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            const month = monthNames.indexOf(monthName);
+            
+            if (month === -1) return;
+            
+            // 格式化日期时间
+            const formattedDate = `${year}/${String(month + 1).padStart(2, '0')}/${String(selectedDay).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+            
+            // 更新输入框
+            currentDateTimeInput.value = formattedDate;
+            
+            // 关闭选择器
+            closeDateTimePicker();
         }
 
         // 交接班功能
@@ -1358,6 +2001,255 @@
             updateNavState();
         }
 
+        // ==================== 日期时间输入框格式约束 ====================
+        // 验证日期时间格式：yyyy/MM/dd HH:mm
+        function validateDateTimeFormat(value) {
+            const regex = /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})$/;
+            const match = value.match(regex);
+            if (!match) return false;
+            
+            const [, year, month, day, hour, minute] = match.map(Number);
+            // 基本范围验证
+            if (month < 1 || month > 12) return false;
+            if (day < 1 || day > 31) return false;
+            if (hour > 23) return false;
+            if (minute > 59) return false;
+            
+            // 更精确的日期验证（考虑月份天数）
+            const date = new Date(year, month - 1, day);
+            if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) {
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 格式化日期时间输入（尝试自动添加分隔符）
+        function formatDateTimeInput(input) {
+            let value = input.value.replace(/[^\d]/g, ''); // 移除非数字字符
+            const original = input.value;
+            
+            // 如果为空或长度不足，直接返回
+            if (value.length === 0) {
+                input.classList.remove('valid', 'invalid');
+                return;
+            }
+            
+            // 限制最大长度（yyyyMMddHHmm = 12位）
+            if (value.length > 12) {
+                value = value.substring(0, 12);
+            }
+            
+            // 根据长度自动添加分隔符
+            let formatted = value;
+            if (value.length >= 4) {
+                formatted = value.substring(0, 4) + '/' + value.substring(4);
+            }
+            if (value.length >= 6) {
+                formatted = formatted.substring(0, 7) + '/' + formatted.substring(7);
+            }
+            if (value.length >= 8) {
+                formatted = formatted.substring(0, 10) + ' ' + formatted.substring(10);
+            }
+            if (value.length >= 10) {
+                formatted = formatted.substring(0, 13) + ':' + formatted.substring(13);
+            }
+            
+            // 如果格式与原来不同，更新输入框
+            if (formatted !== original) {
+                input.value = formatted;
+            }
+            
+            // 验证格式
+            const isValid = validateDateTimeFormat(formatted);
+            input.classList.toggle('valid', isValid);
+            input.classList.toggle('invalid', !isValid && formatted.length > 0);
+        }
+        
+        // 处理输入框获取焦点事件（清除验证状态）
+        function handleDateTimeFocus(e) {
+            const input = e.target;
+            input.classList.remove('valid', 'invalid');
+        }
+        
+        // 处理输入框输入事件（实时格式化与验证）
+        function handleDateTimeInput(e) {
+            const input = e.target;
+            formatDateTimeInput(input);
+        }
+        
+        // 处理输入框失去焦点事件（最终验证）
+        function handleDateTimeBlur(e) {
+            const input = e.target;
+            const value = input.value.trim();
+            
+            if (value === '') {
+                input.classList.remove('valid', 'invalid');
+                return;
+            }
+            
+            const isValid = validateDateTimeFormat(value);
+            input.classList.toggle('valid', isValid);
+            input.classList.toggle('invalid', !isValid);
+            
+            // 如果无效，显示提示但不清空（允许用户修正）
+            if (!isValid) {
+                // 可选：显示更详细的错误提示
+                console.warn('日期时间格式无效，请使用 yyyy/MM/dd HH:mm 格式');
+            }
+        }
+        
+        // 初始化日期时间输入框事件监听（使用事件委托）
+        document.addEventListener('focus', function(e) {
+            if (e.target.classList.contains('datetime-input')) {
+                handleDateTimeFocus(e);
+            }
+        }, true); // 使用捕获阶段确保触发
+        
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('datetime-input')) {
+                handleDateTimeInput(e);
+            }
+        });
+        
+        document.addEventListener('blur', function(e) {
+            if (e.target.classList.contains('datetime-input')) {
+                handleDateTimeBlur(e);
+            }
+        }, true);
+        
+        // 为现有日期时间输入框初始化验证状态（如果页面加载时已存在）
+        document.querySelectorAll('.datetime-input').forEach(input => {
+            const value = input.value.trim();
+            if (value) {
+                const isValid = validateDateTimeFormat(value);
+                input.classList.toggle('valid', isValid);
+                input.classList.toggle('invalid', !isValid);
+            }
+        });
+        
+        // 覆盖原有的日期时间选择器填充函数，确保填充后触发验证
+        const originalConfirmDateTime = window.confirmDateTime;
+        window.confirmDateTime = function() {
+            if (originalConfirmDateTime) {
+                originalConfirmDateTime();
+            }
+            // 触发输入框的验证
+            if (window.currentDateTimeInput) {
+                const event = new Event('input', { bubbles: true });
+                window.currentDateTimeInput.dispatchEvent(event);
+            }
+        };
+        // ==================== 日期时间输入框格式约束结束 ====================
+
+        // ==================== 数字输入框步进增强 ====================
+        // 为.cyber-number添加自定义步进按钮功能
+        function enhanceNumberInputs() {
+            document.querySelectorAll('.cyber-number').forEach(input => {
+                // 确保每个输入框只增强一次
+                if (input.dataset.enhanced) return;
+                input.dataset.enhanced = 'true';
+                
+                // 创建容器包装
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cyber-number-wrapper';
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+                wrapper.style.width = '100%';
+                
+                // 将输入框放入包装
+                input.parentNode.insertBefore(wrapper, input);
+                wrapper.appendChild(input);
+                
+                // 创建上下按钮
+                const upButton = document.createElement('button');
+                upButton.className = 'cyber-number-btn cyber-number-up';
+                upButton.innerHTML = '▲';
+                upButton.setAttribute('type', 'button');
+                upButton.setAttribute('aria-label', '增加');
+                upButton.style.position = 'absolute';
+                upButton.style.right = '16px';
+                upButton.style.top = '50%';
+                upButton.style.transform = 'translateY(-100%)';
+                upButton.style.width = '18px';
+                upButton.style.height = '12px';
+                upButton.style.background = 'none';
+                upButton.style.border = 'none';
+                upButton.style.color = 'var(--accent-cyan)';
+                upButton.style.cursor = 'pointer';
+                upButton.style.fontSize = '10px';
+                upButton.style.display = 'flex';
+                upButton.style.alignItems = 'center';
+                upButton.style.justifyContent = 'center';
+                upButton.style.padding = '0';
+                upButton.style.zIndex = '2';
+                
+                const downButton = document.createElement('button');
+                downButton.className = 'cyber-number-btn cyber-number-down';
+                downButton.innerHTML = '▼';
+                downButton.setAttribute('type', 'button');
+                downButton.setAttribute('aria-label', '减少');
+                downButton.style.position = 'absolute';
+                downButton.style.right = '16px';
+                downButton.style.bottom = '50%';
+                downButton.style.transform = 'translateY(100%)';
+                downButton.style.width = '18px';
+                downButton.style.height = '12px';
+                downButton.style.background = 'none';
+                downButton.style.border = 'none';
+                downButton.style.color = 'var(--accent-cyan)';
+                downButton.style.cursor = 'pointer';
+                downButton.style.fontSize = '10px';
+                downButton.style.display = 'flex';
+                downButton.style.alignItems = 'center';
+                downButton.style.justifyContent = 'center';
+                downButton.style.padding = '0';
+                downButton.style.zIndex = '2';
+                
+                // 添加按钮到包装
+                wrapper.appendChild(upButton);
+                wrapper.appendChild(downButton);
+                
+                // 按钮点击事件
+                upButton.addEventListener('click', () => {
+                    const step = 100;
+                    const min = parseFloat(input.min) || 0;
+                    let value = parseFloat(input.value) || 0;
+                    value += step;
+                    if (min !== undefined && value < min) value = min;
+                    input.value = value.toFixed(2);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                
+                downButton.addEventListener('click', () => {
+                    const step = 100;
+                    const min = parseFloat(input.min) || 0;
+                    let value = parseFloat(input.value) || 0;
+                    value -= step;
+                    if (min !== undefined && value < min) value = min;
+                    input.value = value.toFixed(2);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                
+                // 隐藏默认的背景图片，因为我们有了按钮
+                input.style.backgroundImage = 'none';
+                input.style.paddingRight = '40px'; // 为按钮留出空间
+            });
+        }
+        
+        // 监听弹窗打开事件，增强数字输入框
+        const originalOpenModal = window.openModal;
+        window.openModal = function(type, room) {
+            if (originalOpenModal) originalOpenModal(type, room);
+            // 延迟执行以确保DOM已更新
+            setTimeout(enhanceNumberInputs, 50);
+        };
+        
+        // 初始增强（如果有）
+        document.addEventListener('DOMContentLoaded', enhanceNumberInputs);
+        // ==================== 数字输入框步进增强结束 ====================
 
     </script>
 </body>
